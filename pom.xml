@@ -19,7 +19,7 @@
         <dependency>
             <groupId>com.ethlo.time</groupId>
             <artifactId>itu</artifactId>
-            <version>1.7.5-SNAPSHOT</version>
+            <version>1.7.5</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -64,7 +64,7 @@
                     <fork>1</fork>
                     <resultFormat>JSON</resultFormat>
                     <resultsFile>target/jmh_performance.json</resultsFile>
-                    <iterations>10</iterations>
+                    <iterations>6</iterations>
                     <timeOnIteration>2</timeOnIteration>
                 </configuration>
             </plugin>

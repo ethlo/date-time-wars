@@ -40,6 +40,11 @@ public class ITULenientParserBenchmarkTest {
     }
 
     @Benchmark
+    public void rawMillis(final Blackhole blackhole) {
+        blackhole.consume(ITU.parseLenient("2017-12-21T12:20:45.123Z"));
+    }
+
+    @Benchmark
     public void rawNanos(final Blackhole blackhole) {
         blackhole.consume(ITU.parseLenient("2017-12-21T12:20:45.123123123Z"));
     }

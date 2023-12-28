@@ -43,6 +43,13 @@ public abstract class ParserBenchmarkTest
     }
 
     @Benchmark
+    public void parseMillis(final Blackhole blackhole)
+    {
+        blackhole.consume(parser.parseDateTime("2017-12-21T12:20:45.123Z"));
+    }
+
+
+    @Benchmark
     public void parseNanos(final Blackhole blackhole)
     {
         blackhole.consume(parser.parseDateTime("2017-12-21T12:20:45.987654321Z"));
