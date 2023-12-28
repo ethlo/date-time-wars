@@ -1,2 +1,44 @@
-# date-time-wars
-Benchmarks of different date-time parsers/formatters
+# Date-time wars
+### A micro-benchmark of different date-time parsers and formatters.
+
+## Candidates
+* ITU - Internet Time Utility - https://github.com/ethlo/itu
+* Google HTTP client - [com.google.api.client.util.DateTime](https://github.com/googleapis/google-http-java-client/blob/main/google-http-client/src/main/java/com/google/api/client/util/DateTime.java)
+* Standard JDK - [java.time.OffsetDateTime](https://docs.oracle.com/javase/8/docs/api/java/time/OffsetDateTime.html)
+
+## Performance
+
+Your mileage may vary. I've done my best to make sure these tests are as accurate as possible, but please do your own evaluation.
+* The second resolution test-string is: `2017-12-21T12:20:45Z`
+* The nanosecond-resolution test-string is: `2017-12-21T12:20:45.987654321Z`
+
+### Parsing
+<img src="doc/parse.png" alt="Performance of parsing">
+
+### Formatting
+<img src="doc/format.png" alt="Performance of formatting">
+
+## Custom API
+
+### Raw parsing
+If you do not need to have the full verification of `java.time.OffsetDateTime`,
+you can use the raw, parsed data through `com.ethlo.time.DateTime` that incurs less overhead.
+
+Here it becomes even more visible how the parser scales with the length of the string that is parsed.
+<img src="doc/parse_raw.png" alt="Performance of raw parsing">
+
+### Environment
+Tests performed on a Lenovo P1 G6 laptop:
+* Intel(R) Core(TM) i9-13900H
+* Ubuntu 23.10
+* OpenJDK version 17.0.9
+
+### Run tests yourself
+```shell
+mvn jmh:benchmark
+```
+
+To plot the result and create the resulting image, you can run `plot.py`, for example:
+```
+python3 plot.py -i target/itu_performance.json
+```
