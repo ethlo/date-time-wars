@@ -38,7 +38,7 @@ class ReportGenerator(object):
         plot = dtf.plot(x=0,
                         kind='barh',
                         stacked=False,
-                        title='Operations per millisecond (higher is better)',
+                        title='Time to parse in nanoseconds (lower is better)',
                         figsize=self.fig_size)
 
         for container in plot.containers:

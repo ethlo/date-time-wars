@@ -19,15 +19,16 @@ package common;
  * #L%
  */
 
-import com.ethlo.time.internal.Rfc3339Formatter;
+import java.time.OffsetDateTime;
+import java.util.concurrent.TimeUnit;
+
 import org.openjdk.jmh.annotations.Benchmark;
 import org.openjdk.jmh.annotations.OutputTimeUnit;
 import org.openjdk.jmh.infra.Blackhole;
 
-import java.time.OffsetDateTime;
-import java.util.concurrent.TimeUnit;
+import com.ethlo.time.internal.Rfc3339Formatter;
 
-@OutputTimeUnit(TimeUnit.MILLISECONDS)
+@OutputTimeUnit(TimeUnit.NANOSECONDS)
 public abstract class FormatterBenchmarkTest
 {
     private static final OffsetDateTime input = OffsetDateTime.parse("2017-12-21T12:20:45.987654321Z");

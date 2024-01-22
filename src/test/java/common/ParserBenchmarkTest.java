@@ -19,14 +19,15 @@ package common;/*-
  */
 
 
-import com.ethlo.time.internal.Rfc3339Parser;
+import java.util.concurrent.TimeUnit;
+
 import org.openjdk.jmh.annotations.Benchmark;
 import org.openjdk.jmh.annotations.OutputTimeUnit;
 import org.openjdk.jmh.infra.Blackhole;
 
-import java.util.concurrent.TimeUnit;
+import com.ethlo.time.internal.Rfc3339Parser;
 
-@OutputTimeUnit(TimeUnit.MILLISECONDS)
+@OutputTimeUnit(TimeUnit.NANOSECONDS)
 public abstract class ParserBenchmarkTest
 {
     protected static Rfc3339Parser parser;

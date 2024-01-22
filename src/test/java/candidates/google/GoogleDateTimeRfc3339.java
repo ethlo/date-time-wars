@@ -20,12 +20,12 @@ package candidates.google;
  * #L%
  */
 
-import com.ethlo.time.internal.Rfc3339Parser;
-import com.google.api.client.util.DateTime;
-
 import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
+
+import com.ethlo.time.internal.Rfc3339Parser;
+import com.google.api.client.util.DateTime;
 
 public class GoogleDateTimeRfc3339 implements Rfc3339Parser
 {

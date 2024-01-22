@@ -20,32 +20,44 @@ package candidates.itu;
  * #L%
  */
 
-import com.ethlo.time.ITU;
+import java.util.concurrent.TimeUnit;
+
 import org.openjdk.jmh.annotations.Benchmark;
 import org.openjdk.jmh.annotations.OutputTimeUnit;
 import org.openjdk.jmh.infra.Blackhole;
 
-import java.util.concurrent.TimeUnit;
+import com.ethlo.time.ITU;
 
-@OutputTimeUnit(TimeUnit.MILLISECONDS)
-public class ITULenientParserBenchmarkTest {
+@OutputTimeUnit(TimeUnit.NANOSECONDS)
+public class ITULenientParserBenchmarkTest
+{
     @Benchmark
-    public void rawDate(final Blackhole blackhole) {
+    public void rawDate(final Blackhole blackhole)
+    {
         blackhole.consume(ITU.parseLenient("2017-12-21"));
     }
 
     @Benchmark
-    public void rawSecond(final Blackhole blackhole) {
+    public void rawSecond(final Blackhole blackhole)
+    {
         blackhole.consume(ITU.parseLenient("2017-12-21T12:20:45Z"));
     }
 
     @Benchmark
-    public void rawMillis(final Blackhole blackhole) {
+    public void rawSecondAsInstant(final Blackhole blackhole)
+    {
+        blackhole.consume(ITU.parseLenient("2017-12-21T12:20:45Z").toInstant());
+    }
+
+    @Benchmark
+    public void rawMillis(final Blackhole blackhole)
+    {
         blackhole.consume(ITU.parseLenient("2017-12-21T12:20:45.123Z"));
     }
 
     @Benchmark
-    public void rawNanos(final Blackhole blackhole) {
+    public void rawNanos(final Blackhole blackhole)
+    {
         blackhole.consume(ITU.parseLenient("2017-12-21T12:20:45.123123123Z"));
     }
 }

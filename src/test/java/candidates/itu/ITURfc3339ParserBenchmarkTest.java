@@ -23,8 +23,10 @@ package candidates.itu;
 import com.ethlo.time.internal.EthloITU;
 import common.ParserBenchmarkTest;
 
-public class ITURfc3339ParserBenchmarkTest extends ParserBenchmarkTest {
-    public ITURfc3339ParserBenchmarkTest() {
+public class ITURfc3339ParserBenchmarkTest extends ParserBenchmarkTest
+{
+    public ITURfc3339ParserBenchmarkTest()
+    {
         super(EthloITU.getInstance());
     }
 }
