@@ -1,4 +1,4 @@
-package candidates.jdk;
+package candidates.antonha;
 
 /*-
  * #%L
@@ -20,13 +20,16 @@ package candidates.jdk;
  * #L%
  */
 
+import java.util.concurrent.TimeUnit;
+
+import org.openjdk.jmh.annotations.OutputTimeUnit;
 
 import common.ParserBenchmarkTest;
 
-public class JdkRfc3339ParserBenchmarkTest extends ParserBenchmarkTest
+public class AntonHaLenientParserBenchmarkTest extends ParserBenchmarkTest
 {
-    public JdkRfc3339ParserBenchmarkTest()
+    public AntonHaLenientParserBenchmarkTest()
     {
-        super(new JdkRfc3339());
+        super(new CharDateParser());
     }
 }

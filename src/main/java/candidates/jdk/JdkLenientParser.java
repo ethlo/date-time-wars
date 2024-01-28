@@ -25,15 +25,18 @@ import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeFormatterBuilder;
 import java.time.temporal.ChronoField;
+import java.time.temporal.TemporalAccessor;
 
-import com.ethlo.time.internal.AbstractRfc3339;
+import com.ethlo.time.internal.Rfc3339Formatter;
+import com.ethlo.time.internal.Rfc3339Parser;
+import common.LenientDateTimeParser;
 
 /**
  * Java 8 JDK classes. The safe and normally "efficient enough" choice.
  *
  * @author ethlo - Morten Haraldsen
  */
-public class JdkRfc3339 extends AbstractRfc3339
+public class JdkLenientParser implements LenientDateTimeParser, Rfc3339Parser, Rfc3339Formatter
 {
     private final DateTimeFormatter rfc3339baseFormatter = new DateTimeFormatterBuilder()
             .appendValue(ChronoField.YEAR, 4)
@@ -136,7 +139,12 @@ public class JdkRfc3339 extends AbstractRfc3339
     @Override
     public String formatUtc(OffsetDateTime date, int fractionDigits)
     {
-        assertMaxFractionDigits(fractionDigits);
         return getFormatter(fractionDigits).format(date);
+    }
+
+    @Override
+    public TemporalAccessor parseLenient(final String s)
+    {
+        return parseDateTime(s);
     }
 }

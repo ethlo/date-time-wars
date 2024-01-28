@@ -1,4 +1,4 @@
-package candidates.itu;
+package candidates.jdk;
 
 /*-
  * #%L
@@ -20,13 +20,12 @@ package candidates.itu;
  * #L%
  */
 
-import com.ethlo.time.internal.EthloITU;
 import common.FormatterBenchmarkTest;
 
-public class ITURfc3339FormatterBenchmarkTest extends FormatterBenchmarkTest
+public class JdkRfc3339FormatterBenchmarkTest extends FormatterBenchmarkTest
 {
-    public ITURfc3339FormatterBenchmarkTest()
+    public JdkRfc3339FormatterBenchmarkTest()
     {
-        super(EthloITU.getInstance());
+        super(new JdkLenientParser());
     }
 }

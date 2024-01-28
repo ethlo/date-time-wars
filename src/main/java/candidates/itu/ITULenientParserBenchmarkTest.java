@@ -1,4 +1,4 @@
-package candidates.google;
+package candidates.itu;
 
 /*-
  * #%L
@@ -20,19 +20,17 @@ package candidates.google;
  * #L%
  */
 
-import java.time.Instant;
-import java.time.OffsetDateTime;
-import java.time.ZoneOffset;
+import com.ethlo.time.ITU;
+import com.ethlo.time.internal.EthloITU;
+import common.LenientDateTimeParser;
+import common.ParserBenchmarkTest;
 
-import com.ethlo.time.internal.Rfc3339Parser;
-import com.google.api.client.util.DateTime;
+import java.time.temporal.TemporalAccessor;
 
-public class GoogleDateTimeRfc3339 implements Rfc3339Parser
+public class ITULenientParserBenchmarkTest extends ParserBenchmarkTest
 {
-    @Override
-    public OffsetDateTime parseDateTime(String dateTimeStr)
+    public ITULenientParserBenchmarkTest()
     {
-        final DateTime.SecondsAndNanos secondsAndNanos = DateTime.parseRfc3339ToSecondsAndNanos(dateTimeStr);
-        return OffsetDateTime.ofInstant(Instant.ofEpochSecond(secondsAndNanos.getSeconds(), secondsAndNanos.getNanos()), ZoneOffset.UTC);
+        super(ITU::parseLenient);
     }
 }

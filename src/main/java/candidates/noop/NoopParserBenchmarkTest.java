@@ -1,4 +1,4 @@
-package candidates.jdk;
+package candidates.noop;
 
 /*-
  * #%L
@@ -20,12 +20,14 @@ package candidates.jdk;
  * #L%
  */
 
-import common.FormatterBenchmarkTest;
+import com.ethlo.time.DateTime;
+import com.ethlo.time.TimezoneOffset;
+import common.ParserBenchmarkTest;
 
-public class JdkRfc3339FormatterBenchmarkTest extends FormatterBenchmarkTest
+public class NoopParserBenchmarkTest extends ParserBenchmarkTest
 {
-    public JdkRfc3339FormatterBenchmarkTest()
+    public NoopParserBenchmarkTest()
     {
-        super(new JdkRfc3339());
+        super(chars -> DateTime.of(2222, 12, 22, 1, 1, 22, 4422233, TimezoneOffset.UTC, 3));
     }
 }
