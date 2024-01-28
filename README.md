@@ -13,27 +13,9 @@
 
 Your mileage may vary. I've done my best to make sure these tests are as accurate as possible, but please do your own
 evaluation.
-
-* The second resolution test-string is: `2017-12-21T12:20:45Z`
-* The nanosecond-resolution test-string is: `2017-12-21T12:20:45.987654321Z`
-
 ### Parsing
 
-<img src="doc/parse.png" alt="Performance of parsing">
-
-### Formatting
-
-<img src="doc/format.png" alt="Performance of formatting">
-
-## Custom API
-
-### Raw parsing
-
-If you do not need to have the full verification of `java.time.OffsetDateTime`,
-you can use the raw, parsed data through `com.ethlo.time.DateTime` that incurs less overhead.
-
-Here it becomes even more visible how the parser scales with the length of the string that is parsed.
-<img src="doc/parse_raw.png" alt="Performance of raw parsing">
+[JMH result file](results/jmh-result-grouped.json) - [Visualize JMH](https://jmh.morethan.io/?source=https://raw.githubusercontent.com/ethlo/date-time-wars/main/results/jmh-result-grouped.json)
 
 ### Environment
 
@@ -49,8 +31,8 @@ Tests performed on a Lenovo P1 G6 laptop:
 mvn jmh:benchmark
 ```
 
-To plot the result and create the resulting image, you can run `plot.py`, for example:
+To group the results and create the result file, you can run `plot.py`, for example:
 
 ```
-python3 plot.py -i target/itu_performance.json
+python3 plot.py
 ```
