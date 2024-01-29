@@ -25,9 +25,9 @@ import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.time.temporal.TemporalAccessor;
 
-import com.ethlo.time.internal.Rfc3339Parser;
 import com.google.api.client.util.DateTime;
 import common.LenientDateTimeParser;
+import common.Rfc3339Parser;
 
 public class GoogleDateTimeRfc3339 implements Rfc3339Parser, LenientDateTimeParser
 {

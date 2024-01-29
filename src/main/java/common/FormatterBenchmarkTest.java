@@ -26,8 +26,6 @@ import org.openjdk.jmh.annotations.Benchmark;
 import org.openjdk.jmh.annotations.OutputTimeUnit;
 import org.openjdk.jmh.infra.Blackhole;
 
-import com.ethlo.time.internal.Rfc3339Formatter;
-
 @OutputTimeUnit(TimeUnit.NANOSECONDS)
 public abstract class FormatterBenchmarkTest
 {
