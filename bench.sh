@@ -2,7 +2,7 @@
 #
 # bench.sh - run the date-time-wars JMH benchmarks and generate a report.
 #
-#   ./bench.sh --quick --duration        # ~30s smoke run of the duration parsers
+#   ./bench.sh --quick --duration        # ~1min smoke run of the duration benchmarks
 #   ./bench.sh --parse --gc              # full parse suite with allocation stats
 #   ./bench.sh --thorough --all --async  # publishable numbers + flame graphs
 #   ./bench.sh --list                    # what benchmarks exist?
@@ -236,6 +236,7 @@ ok "JMH finished in ${elapsed}s → $result_json"
     echo "host=$(hostname)"
     echo "cpu=$(grep -m1 'model name' /proc/cpuinfo 2>/dev/null | cut -d: -f2- | sed 's/^ *//' || sysctl -n machdep.cpu.brand_string 2>/dev/null || echo unknown)"
     echo "os=$( (source /etc/os-release 2>/dev/null && echo "$PRETTY_NAME") || uname -sr)"
+    echo "java=$(java -version 2>&1 | head -n1)"
     echo "git=$(git rev-parse --short HEAD 2>/dev/null || echo unknown)$(git diff --quiet 2>/dev/null || echo '-dirty')"
     echo "elapsed_seconds=$elapsed"
 } > "$out_dir/run.properties"

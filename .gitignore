@@ -4,6 +4,4 @@
 /*.json
 *.iml
 dependency-reduced-pom.xml
-results/latest
-results/*/profiles/
-**/summary-cpu.txt__pycache__/
+results/**

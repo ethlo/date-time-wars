@@ -29,7 +29,8 @@ from datetime import datetime
 # Add a pretty name here when the package name isn't good enough.
 LABELS = {
     "itu": "ITU",
-    "itu_configurable": "ITU (token parser)",
+    "itu_configurable": "ITU (configurable)",
+    "itu_clamped": "ITU (hours)",
     "itu_duration": "ITU",  # legacy package name
     "jdk": "JDK java.time",
     "jdk_instant": "JDK Instant",
