@@ -95,6 +95,8 @@ a symlink.
 | `report.html` | self-contained page with bar charts (hover for details) and tables |
 | `report.md` | markdown tables, ready to paste into a README or PR |
 | `report.png` | static chart (needs `matplotlib`) |
+| `summary.md` | one headline ITU-vs-JDK row per method |
+| `summary.png` | compact speed-up chart, transparent so it reads on light and dark |
 | `jmh-result.json` | the raw JMH output, including `jdkVersion` and `vmVersion` |
 | `jmh-result-grouped.json` | relabelled/sorted, for [jmh.morethan.io](https://jmh.morethan.io/) |
 | `run.properties` | environment and settings: CPU, OS, JDK, git rev, suite, mode, iteration args, elapsed |
@@ -112,6 +114,16 @@ directory at <https://ethlo.github.io/date-time-wars/>, which is where the ITU R
 ./bench.sh --thorough --all --publish
 git commit -m "Update benchmark report" && git push
 ```
+
+The ITU README keeps its performance table between `BENCH:START`/`BENCH:END` markers, which `report.py`
+rewrites in place, so the numbers there never drift from a published run:
+
+```shell
+python3 report.py results/latest/jmh-result.json --readme ../itu/README.md
+```
+
+Its chart is hotlinked straight from Pages (`summary.png`), so publishing a run updates it with no commit
+on the ITU side.
 
 Use `--thorough` for anything you publish. The report records the CPU, OS, JDK and git revision behind the
 numbers, so a published run stays traceable.

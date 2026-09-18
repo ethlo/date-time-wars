@@ -273,7 +273,9 @@ if [[ $do_publish -eq 1 ]]; then
         mkdir -p "$PAGES_DIR"
         touch "$PAGES_DIR/.nojekyll"
         cp "$out_dir/report.html" "$PAGES_DIR/index.html"
-        [[ -f "$out_dir/report.png" ]] && cp "$out_dir/report.png" "$PAGES_DIR/report.png"
+        for f in report.png summary.png summary.md; do
+            [[ -f "$out_dir/$f" ]] && cp "$out_dir/$f" "$PAGES_DIR/$f"
+        done
         git add "$PAGES_DIR" || warn "Could not stage $PAGES_DIR (not a git checkout?)"
         ok "Staged $PAGES_DIR/ for GitHub Pages → $PAGES_URL"
         info "Publish with: git commit -m 'Update benchmark report' && git push"

@@ -10,6 +10,8 @@ Produces, in the output directory (default: next to the input file):
     report.md                 markdown tables, ready to paste into the README
     report.html               self-contained page with SVG bar charts + tables
     report.png                matplotlib chart (only if matplotlib is installed)
+    summary.md                one headline ITU-vs-JDK row per method, for the ITU README
+    summary.png               compact speed-up chart, transparent for light/dark READMEs
     jmh-result-grouped.json   the input, relabelled and sorted, for jmh.morethan.io
 
 and prints a ranked summary to the terminal. No dependencies beyond the stdlib.
@@ -17,6 +19,7 @@ and prints a ranked summary to the terminal. No dependencies beyond the stdlib.
 
 import argparse
 import html
+import io
 import json
 import math
 import os
@@ -54,6 +57,11 @@ METHOD_DESC = {
     "formatDuration": "ISO-8601 duration",
 }
 _METHOD_ORDER = {m: i for i, m in enumerate(m for ms in SECTIONS.values() for m in ms)}
+
+# The headline summary (summary.md / summary.png) reduces the whole run to one
+# "how much faster is ITU than the JDK" row per benchmark method.
+SUMMARY_SUBJECT = "ITU"
+SUMMARY_BASELINE = "JDK java.time"
 
 
 def section_of(method):
@@ -562,6 +570,115 @@ def write_png(path, by_method, slots, title):
     return True
 
 
+# --- headline summary ---------------------------------------------------------
+def summary_rows(by_method):
+    """-> [(method, unit, [subject scores], [baseline scores], [speedups])] per method.
+
+    Only scenarios where both SUMMARY_SUBJECT and SUMMARY_BASELINE ran are counted,
+    so a candidate that skips an input can't skew the comparison.
+    """
+    rows = []
+    for method, scenarios in by_method.items():
+        subj, base, unit = [], [], ""
+        for rs in scenarios.values():
+            by_label = {r.label: r for r in rs}
+            s_, b_ = by_label.get(SUMMARY_SUBJECT), by_label.get(SUMMARY_BASELINE)
+            if s_ and b_ and s_.score > 0:
+                subj.append(s_.score)
+                base.append(b_.score)
+                unit = s_.unit
+        if subj:
+            rows.append((method, unit, subj, base, [b / s_ for s_, b in zip(subj, base)]))
+    return rows
+
+
+def _geomean(vals):
+    return math.exp(sum(math.log(v) for v in vals) / len(vals))
+
+
+def _fmt_span(vals, digits=0):
+    """One number, or a lo-hi span. Collapses only when both ends round alike,
+    so a real spread is never flattened into a bogus "5-5"."""
+    lo, hi = fmt_num(min(vals), digits), fmt_num(max(vals), digits)
+    return lo if lo == hi else "%s\u2013%s" % (lo, hi)
+
+
+def _fmt_speedup(vals):
+    """Speed-ups need a decimal below 10x, or 5.0x-5.4x collapses to "5-5"."""
+    return _fmt_span(vals, 0 if min(vals) >= 10 else 1)
+
+
+def summary_table(rows):
+    lines = ["| Operation | %s | %s | Speed-up |" % (SUMMARY_SUBJECT, "JDK `java.time`"),
+             "|:---|---:|---:|---:|"]
+    for method, unit, subj, base, speedups in rows:
+        lines.append("| `%s` | %s %s | %s %s | **%s\u00d7** |" % (
+            method, _fmt_span(subj), unit, _fmt_span(base), unit, _fmt_speedup(speedups)))
+    return "\n".join(lines) + "\n"
+
+
+def write_summary_markdown(path, rows, url=None):
+    table = summary_table(rows)
+    if url:
+        table += "\n[Full report with error bars, inputs and environment \u00bb](%s)\n" % url
+    with io.open(path, "w", encoding="utf-8") as f:
+        f.write(table)
+
+
+README_START = "<!-- BENCH:START"
+README_END = "<!-- BENCH:END -->"
+
+
+def update_readme(path, table):
+    """Replace whatever sits between the BENCH markers in an external README."""
+    with io.open(path, encoding="utf-8") as f:
+        text = f.read()
+    i, j = text.find(README_START), text.find(README_END)
+    if i < 0 or j < 0:
+        return False
+    head_end = text.find("-->", i)
+    if head_end < 0 or head_end > j:
+        return False
+    new = text[:head_end + 3] + "\n" + table.rstrip("\n") + "\n" + text[j:]
+    if new == text:
+        return True
+    with io.open(path, "w", encoding="utf-8") as f:
+        f.write(new)
+    return True
+
+
+def write_summary_png(path, rows):
+    """Compact speed-up chart for a README. Transparent, so it works on light and dark."""
+    try:
+        import matplotlib
+        matplotlib.use("Agg")
+        import matplotlib.pyplot as plt
+    except ImportError:
+        return False
+    rows = list(reversed(rows))  # matplotlib draws bottom-up
+    ink, accent = "#8b8b8b", PALETTE_LIGHT[0]
+    fig, ax = plt.subplots(figsize=(8, 0.42 * len(rows) + 0.9))
+    factors = [_geomean(sp) for _, _, _, _, sp in rows]
+    ax.barh(range(len(rows)), factors, height=0.62, color=accent, zorder=2)
+    for i, (f, (method, unit, subj, base, sp)) in enumerate(zip(factors, rows)):
+        ax.text(f + max(factors) * 0.012, i, " %s\u00d7" % fmt_num(f, 0 if f >= 10 else 1),
+                va="center", fontsize=9, color=ink, fontweight="bold")
+    ax.set_yticks(range(len(rows)))
+    ax.set_yticklabels([m for m, _, _, _, _ in rows], fontsize=9, family="monospace", color=ink)
+    ax.set_xlim(0, max(factors) * 1.22)  # headroom for the value labels
+    ax.set_xlabel("times faster than JDK java.time (higher is better)", fontsize=9, color=ink)
+    ax.tick_params(axis="x", colors=ink, labelsize=8)
+    ax.grid(axis="x", color=ink, alpha=0.18, zorder=0)
+    ax.set_facecolor("none")
+    for side in ("top", "right", "left", "bottom"):
+        ax.spines[side].set_visible(False)
+    fig.patch.set_alpha(0)
+    fig.tight_layout()
+    fig.savefig(path, dpi=160, transparent=True)
+    plt.close(fig)
+    return True
+
+
 # --- grouped json (jmh.morethan.io compatible) --------------------------------
 def write_grouped(path, results):
     arr = []
@@ -580,7 +697,10 @@ def main(argv=None):
     ap.add_argument("-o", "--out", help="output directory (default: directory of the input file)")
     ap.add_argument("--baseline", help="previous jmh-result.json to compare against")
     ap.add_argument("--title", help="report title")
-    ap.add_argument("--no-png", action="store_true", help="skip the matplotlib chart")
+    ap.add_argument("--no-png", action="store_true", help="skip the matplotlib charts")
+    ap.add_argument("--summary-url", default="https://ethlo.github.io/date-time-wars/",
+                    help="link target appended to summary.md")
+    ap.add_argument("--readme", help="splice the summary table into this README's BENCH:START/END block")
     ap.add_argument("-q", "--quiet", action="store_true", help="don't print the summary")
     args = ap.parse_args(argv)
 
@@ -601,10 +721,23 @@ def main(argv=None):
     write_grouped(os.path.join(out_dir, "jmh-result-grouped.json"), results)
     png = False if args.no_png else write_png(os.path.join(out_dir, "report.png"), by_method, slots, title)
 
+    rows = summary_rows(by_method)
+    if rows:
+        write_summary_markdown(os.path.join(out_dir, "summary.md"), rows, args.summary_url)
+        if not args.no_png:
+            write_summary_png(os.path.join(out_dir, "summary.png"), rows)
+        if args.readme:
+            if update_readme(args.readme, summary_table(rows)):
+                print("Updated %s" % args.readme)
+            else:
+                print("No %s ... %s block in %s" % (README_START, README_END, args.readme), file=sys.stderr)
+    else:
+        print("No %s vs %s pairs; skipping summary" % (SUMMARY_SUBJECT, SUMMARY_BASELINE), file=sys.stderr)
+
     if not args.quiet:
         print_summary(by_method, baseline, sys.stdout)
-        print("Reports written to %s/: report.md, report.html%s, jmh-result-grouped.json"
-              % (out_dir, ", report.png" if png else ""))
+        print("Reports written to %s/: report.md, report.html%s, jmh-result-grouped.json%s"
+              % (out_dir, ", report.png" if png else "", ", summary.md" if rows else ""))
         if not png and not args.no_png:
             print("(install matplotlib for report.png)")
 
