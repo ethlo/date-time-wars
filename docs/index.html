@@ -69,13 +69,13 @@ footer { margin-top:40px; color:var(--muted); font-size:12px }
 
 <h1>date-time-wars</h1>
 <p class="sub">36 benchmarks · 6 candidates · average time per operation, lower is better</p>
-<div class="env"><b>Date</b><span>2026-09-18T10:17:18+02:00</span><b>JDK</b><span>25.0.4 (OpenJDK 64-Bit Server VM 25.0.4+7-1-26.04-Ubuntu)</span><b>JVM args</b><span>-XX:+UnlockDiagnosticVMOptions -XX:+TieredCompilation -XX:+AlwaysPreTouch</span><b>Iterations</b><span>1 fork(s), 2 × 1 s warmup, 3 × 1 s measurement</span><b>CPU</b><span>13th Gen Intel(R) Core(TM) i9-13900H</span><b>OS</b><span>Ubuntu 26.04.1 LTS</span><b>Git</b><span>43f9cfe</span></div>
+<div class="env"><b>Date</b><span>2026-09-18T10:57:06+02:00</span><b>JDK</b><span>25.0.4 (OpenJDK 64-Bit Server VM 25.0.4+7-1-26.04-Ubuntu)</span><b>JVM args</b><span>-XX:+UnlockDiagnosticVMOptions -XX:+TieredCompilation -XX:+AlwaysPreTouch</span><b>Iterations</b><span>1 fork(s), 2 × 1 s warmup, 3 × 1 s measurement</span><b>CPU</b><span>13th Gen Intel(R) Core(TM) i9-13900H</span><b>OS</b><span>Ubuntu 26.04.1 LTS</span><b>Git</b><span>0021910</span></div>
 <div class="tiles">
-<div class="tile"><div class="label">parse · fastest</div><div class="who"><i style="background:var(--s0)"></i>ITU</div><div class="value">24.4× <small>faster than slowest, avg</small></div></div>
-<div class="tile"><div class="label">parseLenient · fastest</div><div class="who"><i style="background:var(--s0)"></i>ITU</div><div class="value">43.4× <small>faster than slowest, avg</small></div></div>
+<div class="tile"><div class="label">parse · fastest</div><div class="who"><i style="background:var(--s0)"></i>ITU</div><div class="value">24.1× <small>faster than slowest, avg</small></div></div>
+<div class="tile"><div class="label">parseLenient · fastest</div><div class="who"><i style="background:var(--s0)"></i>ITU</div><div class="value">41.1× <small>faster than slowest, avg</small></div></div>
 <div class="tile"><div class="label">formatSeconds · fastest</div><div class="who"><i style="background:var(--s0)"></i>ITU</div><div class="value">6.4× <small>faster than slowest, avg</small></div></div>
-<div class="tile"><div class="label">formatMillis · fastest</div><div class="who"><i style="background:var(--s0)"></i>ITU</div><div class="value">6.0× <small>faster than slowest, avg</small></div></div>
-<div class="tile"><div class="label">formatNanos · fastest</div><div class="who"><i style="background:var(--s0)"></i>ITU</div><div class="value">3.6× <small>faster than slowest, avg</small></div></div>
+<div class="tile"><div class="label">formatMillis · fastest</div><div class="who"><i style="background:var(--s0)"></i>ITU</div><div class="value">5.9× <small>faster than slowest, avg</small></div></div>
+<div class="tile"><div class="label">formatNanos · fastest</div><div class="who"><i style="background:var(--s0)"></i>ITU</div><div class="value">3.5× <small>faster than slowest, avg</small></div></div>
 <div class="tile"><div class="label">parseDuration · fastest</div><div class="who"><i style="background:var(--s0)"></i>ITU</div><div class="value">5.2× <small>faster than slowest, avg</small></div></div>
 <div class="tile"><div class="label">formatDuration · fastest</div><div class="who"><i style="background:var(--s0)"></i>ITU</div><div class="value">1.3× <small>faster than slowest, avg</small></div></div>
 </div>
@@ -85,194 +85,200 @@ footer { margin-top:40px; color:var(--muted); font-size:12px }
 <title id="c1-t">parse - ns/op, lower is better</title>
 <line class="grid" x1="348.0" y1="20" x2="348.0" y2="374"/>
 <text class="tick" x="348.0" y="388" text-anchor="middle">0</text>
-<line class="grid" x1="522.0" y1="20" x2="522.0" y2="374"/>
-<text class="tick" x="522.0" y="388" text-anchor="middle">1,000</text>
-<line class="grid" x1="696.0" y1="20" x2="696.0" y2="374"/>
-<text class="tick" x="696.0" y="388" text-anchor="middle">2,000</text>
+<line class="grid" x1="452.4" y1="20" x2="452.4" y2="374"/>
+<text class="tick" x="452.4" y="388" text-anchor="middle">250</text>
+<line class="grid" x1="556.8" y1="20" x2="556.8" y2="374"/>
+<text class="tick" x="556.8" y="388" text-anchor="middle">500</text>
+<line class="grid" x1="661.2" y1="20" x2="661.2" y2="374"/>
+<text class="tick" x="661.2" y="388" text-anchor="middle">750</text>
+<line class="grid" x1="765.6" y1="20" x2="765.6" y2="374"/>
+<text class="tick" x="765.6" y="388" text-anchor="middle">1,000</text>
 <line class="grid" x1="870.0" y1="20" x2="870.0" y2="374"/>
-<text class="tick" x="870.0" y="388" text-anchor="middle">3,000</text>
+<text class="tick" x="870.0" y="388" text-anchor="middle">1,250</text>
 <text class="tick" x="956" y="14" text-anchor="end">ns/op</text>
 <text class="rowlabel" x="338" y="78.0" text-anchor="end">parse(&quot;2023-01-01T23:38:34.987654321+06:00&quot;)</text>
-<g class="bar" data-tip="parse(&quot;2023-01-01T23:38:34.987654321+06:00&quot;) · ITU: 33.5 ± 4.3 ns/op (1.00× of fastest)">
+<g class="bar" data-tip="parse(&quot;2023-01-01T23:38:34.987654321+06:00&quot;) · ITU: 32.5 ± 11.7 ns/op (1.00× of fastest)">
 <rect class="hit" x="348" y="23.0" width="602" height="20"/>
-<path fill="var(--s0)" d="M348,24 h1.82836494914676 a4,4 0 0 1 4,4 v10 a4,4 0 0 1 -4,4 h-1.82836494914676 z"/>
-<g class="err"><line x1="353.1" y1="33.0" x2="354.6" y2="33.0"/><line x1="353.1" y1="29.0" x2="353.1" y2="37.0"/><line x1="354.6" y1="29.0" x2="354.6" y2="37.0"/></g>
-<text class="val" x="360.6" y="37.0">33.5</text>
+<path fill="var(--s0)" d="M348,24 h9.58479603602126 a4,4 0 0 1 4,4 v10 a4,4 0 0 1 -4,4 h-9.58479603602126 z"/>
+<g class="err"><line x1="356.7" y1="33.0" x2="366.5" y2="33.0"/><line x1="356.7" y1="29.0" x2="356.7" y2="37.0"/><line x1="366.5" y1="29.0" x2="366.5" y2="37.0"/></g>
+<text class="val" x="372.5" y="37.0">32.5</text>
 </g>
-<g class="bar" data-tip="parse(&quot;2023-01-01T23:38:34.987654321+06:00&quot;) · ITU (configurable): 80.3 ± 30.7 ns/op (2.40× of fastest)">
+<g class="bar" data-tip="parse(&quot;2023-01-01T23:38:34.987654321+06:00&quot;) · ITU (configurable): 73.2 ± 10.8 ns/op (2.25× of fastest)">
 <rect class="hit" x="348" y="43.0" width="602" height="20"/>
-<path fill="var(--s1)" d="M348,44 h9.97665104907827 a4,4 0 0 1 4,4 v10 a4,4 0 0 1 -4,4 h-9.97665104907827 z"/>
-<g class="err"><line x1="356.6" y1="53.0" x2="367.3" y2="53.0"/><line x1="356.6" y1="49.0" x2="356.6" y2="57.0"/><line x1="367.3" y1="49.0" x2="367.3" y2="57.0"/></g>
-<text class="val" x="373.3" y="57.0">80.3</text>
+<path fill="var(--s1)" d="M348,44 h26.582350000420433 a4,4 0 0 1 4,4 v10 a4,4 0 0 1 -4,4 h-26.582350000420433 z"/>
+<g class="err"><line x1="374.1" y1="53.0" x2="383.1" y2="53.0"/><line x1="374.1" y1="49.0" x2="374.1" y2="57.0"/><line x1="383.1" y1="49.0" x2="383.1" y2="57.0"/></g>
+<text class="val" x="389.1" y="57.0">73.2</text>
 </g>
-<g class="bar" data-tip="parse(&quot;2023-01-01T23:38:34.987654321+06:00&quot;) · JDK java.time: 583 ± 205.2 ns/op (17.42× of fastest)">
+<g class="bar" data-tip="parse(&quot;2023-01-01T23:38:34.987654321+06:00&quot;) · JDK java.time: 556 ± 230.3 ns/op (17.08× of fastest)">
 <rect class="hit" x="348" y="63.0" width="602" height="20"/>
-<path fill="var(--s3)" d="M348,64 h97.52817155958144 a4,4 0 0 1 4,4 v10 a4,4 0 0 1 -4,4 h-97.52817155958144 z"/>
-<g class="err"><line x1="413.8" y1="73.0" x2="485.2" y2="73.0"/><line x1="413.8" y1="69.0" x2="413.8" y2="77.0"/><line x1="485.2" y1="69.0" x2="485.2" y2="77.0"/></g>
-<text class="val" x="491.2" y="77.0">583</text>
+<path fill="var(--s3)" d="M348,64 h228.00304297035984 a4,4 0 0 1 4,4 v10 a4,4 0 0 1 -4,4 h-228.00304297035984 z"/>
+<g class="err"><line x1="483.8" y1="73.0" x2="676.2" y2="73.0"/><line x1="483.8" y1="69.0" x2="483.8" y2="77.0"/><line x1="676.2" y1="69.0" x2="676.2" y2="77.0"/></g>
+<text class="val" x="682.2" y="77.0">556</text>
 </g>
-<g class="bar" data-tip="parse(&quot;2023-01-01T23:38:34.987654321+06:00&quot;) · JDK Instant: 457 ± 485.7 ns/op (13.65× of fastest)">
+<g class="bar" data-tip="parse(&quot;2023-01-01T23:38:34.987654321+06:00&quot;) · JDK Instant: 456 ± 129.7 ns/op (14.02× of fastest)">
 <rect class="hit" x="348" y="83.0" width="602" height="20"/>
-<path fill="var(--s4)" d="M348,84 h75.56140649243781 a4,4 0 0 1 4,4 v10 a4,4 0 0 1 -4,4 h-75.56140649243781 z"/>
-<g class="err"><line x1="348.0" y1="93.0" x2="512.1" y2="93.0"/><line x1="348.0" y1="89.0" x2="348.0" y2="97.0"/><line x1="512.1" y1="89.0" x2="512.1" y2="97.0"/></g>
-<text class="val" x="518.1" y="97.0">457</text>
+<path fill="var(--s4)" d="M348,84 h186.51892806741444 a4,4 0 0 1 4,4 v10 a4,4 0 0 1 -4,4 h-186.51892806741444 z"/>
+<g class="err"><line x1="484.4" y1="93.0" x2="592.7" y2="93.0"/><line x1="484.4" y1="89.0" x2="484.4" y2="97.0"/><line x1="592.7" y1="89.0" x2="592.7" y2="97.0"/></g>
+<text class="val" x="598.7" y="97.0">456</text>
 </g>
-<g class="bar" data-tip="parse(&quot;2023-01-01T23:38:34.987654321+06:00&quot;) · Google HTTP client: 725 ± 1,851.6 ns/op (21.65× of fastest)">
+<g class="bar" data-tip="parse(&quot;2023-01-01T23:38:34.987654321+06:00&quot;) · Google HTTP client: 662 ± 534.3 ns/op (20.35× of fastest)">
 <rect class="hit" x="348" y="103.0" width="602" height="20"/>
-<path fill="var(--s5)" d="M348,104 h122.17381603881034 a4,4 0 0 1 4,4 v10 a4,4 0 0 1 -4,4 h-122.17381603881034 z"/>
-<g class="err"><line x1="348.0" y1="113.0" x2="796.3" y2="113.0"/><line x1="348.0" y1="109.0" x2="348.0" y2="117.0"/><line x1="796.3" y1="109.0" x2="796.3" y2="117.0"/></g>
-<text class="val" x="802.3" y="117.0">725</text>
+<path fill="var(--s5)" d="M348,104 h272.4183087346837 a4,4 0 0 1 4,4 v10 a4,4 0 0 1 -4,4 h-272.4183087346837 z"/>
+<g class="err"><line x1="401.3" y1="113.0" x2="847.6" y2="113.0"/><line x1="401.3" y1="109.0" x2="401.3" y2="117.0"/><line x1="847.6" y1="109.0" x2="847.6" y2="117.0"/></g>
+<text class="val" x="853.6" y="117.0">662</text>
 </g>
 <text class="rowlabel" x="338" y="196.0" text-anchor="end">parse(&quot;3074-07-01T12:02:01Z&quot;)</text>
-<g class="bar" data-tip="parse(&quot;3074-07-01T12:02:01Z&quot;) · ITU: 20.2 ± 7.8 ns/op (1.00× of fastest)">
+<g class="bar" data-tip="parse(&quot;3074-07-01T12:02:01Z&quot;) · ITU: 20.4 ± 11.6 ns/op (1.00× of fastest)">
 <rect class="hit" x="348" y="141.0" width="602" height="20"/>
-<path fill="var(--s0)" d="M348,142 h0.0 a3.508643100718132,3.508643100718132 0 0 1 3.508643100718132,3.508643100718132 v10.982713798563736 a3.508643100718132,3.508643100718132 0 0 1 -3.508643100718132,3.508643100718132 h-0.0 z"/>
-<g class="err"><line x1="350.2" y1="151.0" x2="352.9" y2="151.0"/><line x1="350.2" y1="147.0" x2="350.2" y2="155.0"/><line x1="352.9" y1="147.0" x2="352.9" y2="155.0"/></g>
-<text class="val" x="358.9" y="155.0">20.2</text>
+<path fill="var(--s0)" d="M348,142 h4.5198555513046585 a4,4 0 0 1 4,4 v10 a4,4 0 0 1 -4,4 h-4.5198555513046585 z"/>
+<g class="err"><line x1="351.7" y1="151.0" x2="361.4" y2="151.0"/><line x1="351.7" y1="147.0" x2="351.7" y2="155.0"/><line x1="361.4" y1="147.0" x2="361.4" y2="155.0"/></g>
+<text class="val" x="367.4" y="155.0">20.4</text>
 </g>
-<g class="bar" data-tip="parse(&quot;3074-07-01T12:02:01Z&quot;) · JDK java.time: 553 ± 187.6 ns/op (27.40× of fastest)">
+<g class="bar" data-tip="parse(&quot;3074-07-01T12:02:01Z&quot;) · JDK java.time: 546 ± 132.5 ns/op (26.77× of fastest)">
 <rect class="hit" x="348" y="181.0" width="602" height="20"/>
-<path fill="var(--s3)" d="M348,182 h92.14252592160585 a4,4 0 0 1 4,4 v10 a4,4 0 0 1 -4,4 h-92.14252592160585 z"/>
-<g class="err"><line x1="411.5" y1="191.0" x2="476.8" y2="191.0"/><line x1="411.5" y1="187.0" x2="411.5" y2="195.0"/><line x1="476.8" y1="187.0" x2="476.8" y2="195.0"/></g>
-<text class="val" x="482.8" y="195.0">553</text>
+<path fill="var(--s3)" d="M348,182 h224.05020360102878 a4,4 0 0 1 4,4 v10 a4,4 0 0 1 -4,4 h-224.05020360102878 z"/>
+<g class="err"><line x1="520.7" y1="191.0" x2="631.4" y2="191.0"/><line x1="520.7" y1="187.0" x2="520.7" y2="195.0"/><line x1="631.4" y1="187.0" x2="631.4" y2="195.0"/></g>
+<text class="val" x="637.4" y="195.0">546</text>
 </g>
-<g class="bar" data-tip="parse(&quot;3074-07-01T12:02:01Z&quot;) · JDK Instant: 428 ± 82.9 ns/op (21.21× of fastest)">
+<g class="bar" data-tip="parse(&quot;3074-07-01T12:02:01Z&quot;) · JDK Instant: 419 ± 263.6 ns/op (20.52× of fastest)">
 <rect class="hit" x="348" y="201.0" width="602" height="20"/>
-<path fill="var(--s4)" d="M348,202 h70.40771184463483 a4,4 0 0 1 4,4 v10 a4,4 0 0 1 -4,4 h-70.40771184463483 z"/>
-<g class="err"><line x1="408.0" y1="211.0" x2="436.8" y2="211.0"/><line x1="408.0" y1="207.0" x2="408.0" y2="215.0"/><line x1="436.8" y1="207.0" x2="436.8" y2="215.0"/></g>
-<text class="val" x="442.8" y="215.0">428</text>
+<path fill="var(--s4)" d="M348,202 h170.85758658803366 a4,4 0 0 1 4,4 v10 a4,4 0 0 1 -4,4 h-170.85758658803366 z"/>
+<g class="err"><line x1="412.8" y1="211.0" x2="632.9" y2="211.0"/><line x1="412.8" y1="207.0" x2="412.8" y2="215.0"/><line x1="632.9" y1="207.0" x2="632.9" y2="215.0"/></g>
+<text class="val" x="638.9" y="215.0">419</text>
 </g>
-<g class="bar" data-tip="parse(&quot;3074-07-01T12:02:01Z&quot;) · Google HTTP client: 473 ± 268.4 ns/op (23.46× of fastest)">
+<g class="bar" data-tip="parse(&quot;3074-07-01T12:02:01Z&quot;) · Google HTTP client: 503 ± 341.7 ns/op (24.64× of fastest)">
 <rect class="hit" x="348" y="221.0" width="602" height="20"/>
-<path fill="var(--s5)" d="M348,222 h78.31965565826977 a4,4 0 0 1 4,4 v10 a4,4 0 0 1 -4,4 h-78.31965565826977 z"/>
-<g class="err"><line x1="383.6" y1="231.0" x2="477.0" y2="231.0"/><line x1="383.6" y1="227.0" x2="383.6" y2="235.0"/><line x1="477.0" y1="227.0" x2="477.0" y2="235.0"/></g>
-<text class="val" x="483.0" y="235.0">473</text>
+<path fill="var(--s5)" d="M348,222 h205.914459325179 a4,4 0 0 1 4,4 v10 a4,4 0 0 1 -4,4 h-205.914459325179 z"/>
+<g class="err"><line x1="415.2" y1="231.0" x2="700.6" y2="231.0"/><line x1="415.2" y1="227.0" x2="415.2" y2="235.0"/><line x1="700.6" y1="227.0" x2="700.6" y2="235.0"/></g>
+<text class="val" x="706.6" y="235.0">503</text>
 </g>
 <text class="rowlabel" x="338" y="314.0" text-anchor="end">parse(&quot;5050-01-01T12:02:01.123Z&quot;)</text>
-<g class="bar" data-tip="parse(&quot;5050-01-01T12:02:01.123Z&quot;) · ITU: 24.9 ± 7.1 ns/op (1.00× of fastest)">
+<g class="bar" data-tip="parse(&quot;5050-01-01T12:02:01.123Z&quot;) · ITU: 25.5 ± 9.2 ns/op (1.00× of fastest)">
 <rect class="hit" x="348" y="259.0" width="602" height="20"/>
-<path fill="var(--s0)" d="M348,260 h0.3307905735144345 a4,4 0 0 1 4,4 v10 a4,4 0 0 1 -4,4 h-0.3307905735144345 z"/>
-<g class="err"><line x1="351.1" y1="269.0" x2="353.6" y2="269.0"/><line x1="351.1" y1="265.0" x2="351.1" y2="273.0"/><line x1="353.6" y1="265.0" x2="353.6" y2="273.0"/></g>
-<text class="val" x="359.6" y="273.0">24.9</text>
+<path fill="var(--s0)" d="M348,260 h6.6526122503215674 a4,4 0 0 1 4,4 v10 a4,4 0 0 1 -4,4 h-6.6526122503215674 z"/>
+<g class="err"><line x1="354.8" y1="269.0" x2="362.5" y2="269.0"/><line x1="354.8" y1="265.0" x2="354.8" y2="273.0"/><line x1="362.5" y1="265.0" x2="362.5" y2="273.0"/></g>
+<text class="val" x="368.5" y="273.0">25.5</text>
 </g>
-<g class="bar" data-tip="parse(&quot;5050-01-01T12:02:01.123Z&quot;) · ITU (configurable): 60.2 ± 29.0 ns/op (2.42× of fastest)">
+<g class="bar" data-tip="parse(&quot;5050-01-01T12:02:01.123Z&quot;) · ITU (configurable): 70.8 ± 42.3 ns/op (2.78× of fastest)">
 <rect class="hit" x="348" y="279.0" width="602" height="20"/>
-<path fill="var(--s1)" d="M348,280 h6.469514403684514 a4,4 0 0 1 4,4 v10 a4,4 0 0 1 -4,4 h-6.469514403684514 z"/>
-<g class="err"><line x1="353.4" y1="289.0" x2="363.5" y2="289.0"/><line x1="353.4" y1="285.0" x2="353.4" y2="293.0"/><line x1="363.5" y1="285.0" x2="363.5" y2="293.0"/></g>
-<text class="val" x="369.5" y="293.0">60.2</text>
+<path fill="var(--s1)" d="M348,280 h25.58553935099252 a4,4 0 0 1 4,4 v10 a4,4 0 0 1 -4,4 h-25.58553935099252 z"/>
+<g class="err"><line x1="359.9" y1="289.0" x2="395.3" y2="289.0"/><line x1="359.9" y1="285.0" x2="359.9" y2="293.0"/><line x1="395.3" y1="285.0" x2="395.3" y2="293.0"/></g>
+<text class="val" x="401.3" y="293.0">70.8</text>
 </g>
-<g class="bar" data-tip="parse(&quot;5050-01-01T12:02:01.123Z&quot;) · JDK java.time: 601 ± 167.8 ns/op (24.15× of fastest)">
+<g class="bar" data-tip="parse(&quot;5050-01-01T12:02:01.123Z&quot;) · JDK java.time: 579 ± 211.0 ns/op (22.72× of fastest)">
 <rect class="hit" x="348" y="299.0" width="602" height="20"/>
-<path fill="var(--s3)" d="M348,300 h100.60727677006662 a4,4 0 0 1 4,4 v10 a4,4 0 0 1 -4,4 h-100.60727677006662 z"/>
-<g class="err"><line x1="423.4" y1="309.0" x2="481.8" y2="309.0"/><line x1="423.4" y1="305.0" x2="423.4" y2="313.0"/><line x1="481.8" y1="305.0" x2="481.8" y2="313.0"/></g>
-<text class="val" x="487.8" y="313.0">601</text>
+<path fill="var(--s3)" d="M348,300 h237.98098584544528 a4,4 0 0 1 4,4 v10 a4,4 0 0 1 -4,4 h-237.98098584544528 z"/>
+<g class="err"><line x1="501.9" y1="309.0" x2="678.1" y2="309.0"/><line x1="501.9" y1="305.0" x2="501.9" y2="313.0"/><line x1="678.1" y1="305.0" x2="678.1" y2="313.0"/></g>
+<text class="val" x="684.1" y="313.0">579</text>
 </g>
-<g class="bar" data-tip="parse(&quot;5050-01-01T12:02:01.123Z&quot;) · JDK Instant: 476 ± 951.5 ns/op (19.11× of fastest)">
+<g class="bar" data-tip="parse(&quot;5050-01-01T12:02:01.123Z&quot;) · JDK Instant: 430 ± 133.6 ns/op (16.85× of fastest)">
 <rect class="hit" x="348" y="319.0" width="602" height="20"/>
-<path fill="var(--s4)" d="M348,320 h78.75581054741474 a4,4 0 0 1 4,4 v10 a4,4 0 0 1 -4,4 h-78.75581054741474 z"/>
-<g class="err"><line x1="348.0" y1="329.0" x2="596.3" y2="329.0"/><line x1="348.0" y1="325.0" x2="348.0" y2="333.0"/><line x1="596.3" y1="325.0" x2="596.3" y2="333.0"/></g>
-<text class="val" x="602.3" y="333.0">476</text>
+<path fill="var(--s4)" d="M348,320 h175.48888187738612 a4,4 0 0 1 4,4 v10 a4,4 0 0 1 -4,4 h-175.48888187738612 z"/>
+<g class="err"><line x1="471.7" y1="329.0" x2="583.3" y2="329.0"/><line x1="471.7" y1="325.0" x2="471.7" y2="333.0"/><line x1="583.3" y1="325.0" x2="583.3" y2="333.0"/></g>
+<text class="val" x="589.3" y="333.0">430</text>
 </g>
-<g class="bar" data-tip="parse(&quot;5050-01-01T12:02:01.123Z&quot;) · Google HTTP client: 590 ± 108.3 ns/op (23.72× of fastest)">
+<g class="bar" data-tip="parse(&quot;5050-01-01T12:02:01.123Z&quot;) · Google HTTP client: 640 ± 330.8 ns/op (25.11× of fastest)">
 <rect class="hit" x="348" y="339.0" width="602" height="20"/>
-<path fill="var(--s5)" d="M348,340 h98.73924986487418 a4,4 0 0 1 4,4 v10 a4,4 0 0 1 -4,4 h-98.73924986487418 z"/>
-<g class="err"><line x1="431.9" y1="349.0" x2="469.6" y2="349.0"/><line x1="431.9" y1="345.0" x2="431.9" y2="353.0"/><line x1="469.6" y1="345.0" x2="469.6" y2="353.0"/></g>
-<text class="val" x="475.6" y="353.0">590</text>
+<path fill="var(--s5)" d="M348,340 h263.4457944676676 a4,4 0 0 1 4,4 v10 a4,4 0 0 1 -4,4 h-263.4457944676676 z"/>
+<g class="err"><line x1="477.3" y1="349.0" x2="753.6" y2="349.0"/><line x1="477.3" y1="345.0" x2="477.3" y2="353.0"/><line x1="753.6" y1="345.0" x2="753.6" y2="353.0"/></g>
+<text class="val" x="759.6" y="353.0">640</text>
 </g>
 <line class="axis" x1="348" y1="20" x2="348" y2="374"/>
 </svg></div>
 <h4><code>parse(&quot;2023-01-01T23:38:34.987654321+06:00&quot;)</code></h4>
 <table><tr><th>#</th><th>Candidate</th><th>ns/op</th><th>± error</th><th>rel</th></tr>
-<tr class="best"><td>1</td><td><i class="sw" style="background:var(--s0)"></i>ITU</td><td>33.5</td><td>4.3</td><td>1.00×</td></tr>
-<tr><td>2</td><td><i class="sw" style="background:var(--s1)"></i>ITU (configurable)</td><td>80.3</td><td>30.7</td><td>2.40×</td></tr>
-<tr><td>3</td><td><i class="sw" style="background:var(--s4)"></i>JDK Instant</td><td>457</td><td>485.7</td><td>13.65×</td></tr>
-<tr><td>4</td><td><i class="sw" style="background:var(--s3)"></i>JDK java.time</td><td>583</td><td>205.2</td><td>17.42×</td></tr>
-<tr><td>5</td><td><i class="sw" style="background:var(--s5)"></i>Google HTTP client</td><td>725</td><td>1,851.6</td><td>21.65×</td></tr>
+<tr class="best"><td>1</td><td><i class="sw" style="background:var(--s0)"></i>ITU</td><td>32.5</td><td>11.7</td><td>1.00×</td></tr>
+<tr><td>2</td><td><i class="sw" style="background:var(--s1)"></i>ITU (configurable)</td><td>73.2</td><td>10.8</td><td>2.25×</td></tr>
+<tr><td>3</td><td><i class="sw" style="background:var(--s4)"></i>JDK Instant</td><td>456</td><td>129.7</td><td>14.02×</td></tr>
+<tr><td>4</td><td><i class="sw" style="background:var(--s3)"></i>JDK java.time</td><td>556</td><td>230.3</td><td>17.08×</td></tr>
+<tr><td>5</td><td><i class="sw" style="background:var(--s5)"></i>Google HTTP client</td><td>662</td><td>534.3</td><td>20.35×</td></tr>
 </table>
 <h4><code>parse(&quot;3074-07-01T12:02:01Z&quot;)</code></h4>
 <table><tr><th>#</th><th>Candidate</th><th>ns/op</th><th>± error</th><th>rel</th></tr>
-<tr class="best"><td>1</td><td><i class="sw" style="background:var(--s0)"></i>ITU</td><td>20.2</td><td>7.8</td><td>1.00×</td></tr>
-<tr><td>2</td><td><i class="sw" style="background:var(--s4)"></i>JDK Instant</td><td>428</td><td>82.9</td><td>21.21×</td></tr>
-<tr><td>3</td><td><i class="sw" style="background:var(--s5)"></i>Google HTTP client</td><td>473</td><td>268.4</td><td>23.46×</td></tr>
-<tr><td>4</td><td><i class="sw" style="background:var(--s3)"></i>JDK java.time</td><td>553</td><td>187.6</td><td>27.40×</td></tr>
+<tr class="best"><td>1</td><td><i class="sw" style="background:var(--s0)"></i>ITU</td><td>20.4</td><td>11.6</td><td>1.00×</td></tr>
+<tr><td>2</td><td><i class="sw" style="background:var(--s4)"></i>JDK Instant</td><td>419</td><td>263.6</td><td>20.52×</td></tr>
+<tr><td>3</td><td><i class="sw" style="background:var(--s5)"></i>Google HTTP client</td><td>503</td><td>341.7</td><td>24.64×</td></tr>
+<tr><td>4</td><td><i class="sw" style="background:var(--s3)"></i>JDK java.time</td><td>546</td><td>132.5</td><td>26.77×</td></tr>
 </table>
 <h4><code>parse(&quot;5050-01-01T12:02:01.123Z&quot;)</code></h4>
 <table><tr><th>#</th><th>Candidate</th><th>ns/op</th><th>± error</th><th>rel</th></tr>
-<tr class="best"><td>1</td><td><i class="sw" style="background:var(--s0)"></i>ITU</td><td>24.9</td><td>7.1</td><td>1.00×</td></tr>
-<tr><td>2</td><td><i class="sw" style="background:var(--s1)"></i>ITU (configurable)</td><td>60.2</td><td>29.0</td><td>2.42×</td></tr>
-<tr><td>3</td><td><i class="sw" style="background:var(--s4)"></i>JDK Instant</td><td>476</td><td>951.5</td><td>19.11×</td></tr>
-<tr><td>4</td><td><i class="sw" style="background:var(--s5)"></i>Google HTTP client</td><td>590</td><td>108.3</td><td>23.72×</td></tr>
-<tr><td>5</td><td><i class="sw" style="background:var(--s3)"></i>JDK java.time</td><td>601</td><td>167.8</td><td>24.15×</td></tr>
+<tr class="best"><td>1</td><td><i class="sw" style="background:var(--s0)"></i>ITU</td><td>25.5</td><td>9.2</td><td>1.00×</td></tr>
+<tr><td>2</td><td><i class="sw" style="background:var(--s1)"></i>ITU (configurable)</td><td>70.8</td><td>42.3</td><td>2.78×</td></tr>
+<tr><td>3</td><td><i class="sw" style="background:var(--s4)"></i>JDK Instant</td><td>430</td><td>133.6</td><td>16.85×</td></tr>
+<tr><td>4</td><td><i class="sw" style="background:var(--s3)"></i>JDK java.time</td><td>579</td><td>211.0</td><td>22.72×</td></tr>
+<tr><td>5</td><td><i class="sw" style="background:var(--s5)"></i>Google HTTP client</td><td>640</td><td>330.8</td><td>25.11×</td></tr>
 </table>
 <h3 class="method">parseLenient <span>lenient date-time (optional fields)</span></h3>
 <div class="card"><div class="legend"><span class="key"><i style="background:var(--s0)"></i>ITU</span><span class="key"><i style="background:var(--s3)"></i>JDK java.time</span></div><svg class="chart" viewBox="0 0 960 214" width="100%" role="img" aria-labelledby="c2-t">
 <title id="c2-t">parseLenient - ns/op, lower is better</title>
 <line class="grid" x1="360.0" y1="20" x2="360.0" y2="194"/>
 <text class="tick" x="360.0" y="208" text-anchor="middle">0</text>
-<line class="grid" x1="487.5" y1="20" x2="487.5" y2="194"/>
-<text class="tick" x="487.5" y="208" text-anchor="middle">1,000</text>
-<line class="grid" x1="615.0" y1="20" x2="615.0" y2="194"/>
-<text class="tick" x="615.0" y="208" text-anchor="middle">2,000</text>
-<line class="grid" x1="742.5" y1="20" x2="742.5" y2="194"/>
-<text class="tick" x="742.5" y="208" text-anchor="middle">3,000</text>
+<line class="grid" x1="462.0" y1="20" x2="462.0" y2="194"/>
+<text class="tick" x="462.0" y="208" text-anchor="middle">250</text>
+<line class="grid" x1="564.0" y1="20" x2="564.0" y2="194"/>
+<text class="tick" x="564.0" y="208" text-anchor="middle">500</text>
+<line class="grid" x1="666.0" y1="20" x2="666.0" y2="194"/>
+<text class="tick" x="666.0" y="208" text-anchor="middle">750</text>
+<line class="grid" x1="768.0" y1="20" x2="768.0" y2="194"/>
+<text class="tick" x="768.0" y="208" text-anchor="middle">1,000</text>
 <line class="grid" x1="870.0" y1="20" x2="870.0" y2="194"/>
-<text class="tick" x="870.0" y="208" text-anchor="middle">4,000</text>
+<text class="tick" x="870.0" y="208" text-anchor="middle">1,250</text>
 <text class="tick" x="956" y="14" text-anchor="end">ns/op</text>
 <text class="rowlabel" x="350" y="48.0" text-anchor="end">parseLenient(&quot;2023-01-01T23:38:34.987654321+06:00&quot;)</text>
-<g class="bar" data-tip="parseLenient(&quot;2023-01-01T23:38:34.987654321+06:00&quot;) · ITU: 25.1 ± 12.3 ns/op (1.00× of fastest)">
+<g class="bar" data-tip="parseLenient(&quot;2023-01-01T23:38:34.987654321+06:00&quot;) · ITU: 24.5 ± 7.9 ns/op (1.00× of fastest)">
 <rect class="hit" x="360" y="23.0" width="590" height="20"/>
-<path fill="var(--s0)" d="M360,24 h0.0 a3.1982307518075572,3.1982307518075572 0 0 1 3.1982307518075572,3.1982307518075572 v11.603538496384886 a3.1982307518075572,3.1982307518075572 0 0 1 -3.1982307518075572,3.1982307518075572 h-0.0 z"/>
-<g class="err"><line x1="361.6" y1="33.0" x2="364.8" y2="33.0"/><line x1="361.6" y1="29.0" x2="361.6" y2="37.0"/><line x1="364.8" y1="29.0" x2="364.8" y2="37.0"/></g>
-<text class="val" x="370.8" y="37.0">25.1</text>
+<path fill="var(--s0)" d="M360,24 h5.990788817929399 a4,4 0 0 1 4,4 v10 a4,4 0 0 1 -4,4 h-5.990788817929399 z"/>
+<g class="err"><line x1="366.8" y1="33.0" x2="373.2" y2="33.0"/><line x1="366.8" y1="29.0" x2="366.8" y2="37.0"/><line x1="373.2" y1="29.0" x2="373.2" y2="37.0"/></g>
+<text class="val" x="379.2" y="37.0">24.5</text>
 </g>
-<g class="bar" data-tip="parseLenient(&quot;2023-01-01T23:38:34.987654321+06:00&quot;) · JDK java.time: 800 ± 250.2 ns/op (31.90× of fastest)">
+<g class="bar" data-tip="parseLenient(&quot;2023-01-01T23:38:34.987654321+06:00&quot;) · JDK java.time: 789 ± 334.1 ns/op (32.24× of fastest)">
 <rect class="hit" x="360" y="43.0" width="590" height="20"/>
-<path fill="var(--s3)" d="M360,44 h98.03715772729453 a4,4 0 0 1 4,4 v10 a4,4 0 0 1 -4,4 h-98.03715772729453 z"/>
-<g class="err"><line x1="430.1" y1="53.0" x2="493.9" y2="53.0"/><line x1="430.1" y1="49.0" x2="430.1" y2="57.0"/><line x1="493.9" y1="49.0" x2="493.9" y2="57.0"/></g>
-<text class="val" x="499.9" y="57.0">800</text>
+<path fill="var(--s3)" d="M360,44 h318.1118558709172 a4,4 0 0 1 4,4 v10 a4,4 0 0 1 -4,4 h-318.1118558709172 z"/>
+<g class="err"><line x1="545.8" y1="53.0" x2="818.4" y2="53.0"/><line x1="545.8" y1="49.0" x2="545.8" y2="57.0"/><line x1="818.4" y1="49.0" x2="818.4" y2="57.0"/></g>
+<text class="val" x="824.4" y="57.0">789</text>
 </g>
 <text class="rowlabel" x="350" y="106.0" text-anchor="end">parseLenient(&quot;3074-07-01T12:02:01Z&quot;)</text>
-<g class="bar" data-tip="parseLenient(&quot;3074-07-01T12:02:01Z&quot;) · ITU: 13.9 ± 5.2 ns/op (1.00× of fastest)">
+<g class="bar" data-tip="parseLenient(&quot;3074-07-01T12:02:01Z&quot;) · ITU: 13.8 ± 5.5 ns/op (1.00× of fastest)">
 <rect class="hit" x="360" y="81.0" width="590" height="20"/>
-<path fill="var(--s0)" d="M360,82 h0.0 a1.7770965432857793,1.7770965432857793 0 0 1 1.7770965432857793,1.7770965432857793 v14.445806913428441 a1.7770965432857793,1.7770965432857793 0 0 1 -1.7770965432857793,1.7770965432857793 h-0.0 z"/>
-<g class="err"><line x1="361.1" y1="91.0" x2="362.4" y2="91.0"/><line x1="361.1" y1="87.0" x2="361.1" y2="95.0"/><line x1="362.4" y1="87.0" x2="362.4" y2="95.0"/></g>
-<text class="val" x="368.4" y="95.0">13.9</text>
+<path fill="var(--s0)" d="M360,82 h1.61633075982337 a4,4 0 0 1 4,4 v10 a4,4 0 0 1 -4,4 h-1.61633075982337 z"/>
+<g class="err"><line x1="363.4" y1="91.0" x2="367.9" y2="91.0"/><line x1="363.4" y1="87.0" x2="363.4" y2="95.0"/><line x1="367.9" y1="87.0" x2="367.9" y2="95.0"/></g>
+<text class="val" x="373.9" y="95.0">13.8</text>
 </g>
-<g class="bar" data-tip="parseLenient(&quot;3074-07-01T12:02:01Z&quot;) · JDK java.time: 820 ± 2,765.0 ns/op (58.85× of fastest)">
+<g class="bar" data-tip="parseLenient(&quot;3074-07-01T12:02:01Z&quot;) · JDK java.time: 736 ± 82.7 ns/op (53.44× of fastest)">
 <rect class="hit" x="360" y="101.0" width="590" height="20"/>
-<path fill="var(--s3)" d="M360,102 h100.57869072527535 a4,4 0 0 1 4,4 v10 a4,4 0 0 1 -4,4 h-100.57869072527535 z"/>
-<g class="err"><line x1="360.0" y1="111.0" x2="817.1" y2="111.0"/><line x1="360.0" y1="107.0" x2="360.0" y2="115.0"/><line x1="817.1" y1="107.0" x2="817.1" y2="115.0"/></g>
-<text class="val" x="823.1" y="115.0">820</text>
+<path fill="var(--s3)" d="M360,102 h296.1218750060458 a4,4 0 0 1 4,4 v10 a4,4 0 0 1 -4,4 h-296.1218750060458 z"/>
+<g class="err"><line x1="626.4" y1="111.0" x2="693.9" y2="111.0"/><line x1="626.4" y1="107.0" x2="626.4" y2="115.0"/><line x1="693.9" y1="107.0" x2="693.9" y2="115.0"/></g>
+<text class="val" x="699.9" y="115.0">736</text>
 </g>
 <text class="rowlabel" x="350" y="164.0" text-anchor="end">parseLenient(&quot;5050-01-01T12:02:01.123Z&quot;)</text>
-<g class="bar" data-tip="parseLenient(&quot;5050-01-01T12:02:01.123Z&quot;) · ITU: 19.8 ± 8.5 ns/op (1.00× of fastest)">
+<g class="bar" data-tip="parseLenient(&quot;5050-01-01T12:02:01.123Z&quot;) · ITU: 21.1 ± 6.3 ns/op (1.00× of fastest)">
 <rect class="hit" x="360" y="139.0" width="590" height="20"/>
-<path fill="var(--s0)" d="M360,140 h0.0 a2.5304722386481444,2.5304722386481444 0 0 1 2.5304722386481444,2.5304722386481444 v12.939055522703711 a2.5304722386481444,2.5304722386481444 0 0 1 -2.5304722386481444,2.5304722386481444 h-0.0 z"/>
-<g class="err"><line x1="361.4" y1="149.0" x2="363.6" y2="149.0"/><line x1="361.4" y1="145.0" x2="361.4" y2="153.0"/><line x1="363.6" y1="145.0" x2="363.6" y2="153.0"/></g>
-<text class="val" x="369.6" y="153.0">19.8</text>
+<path fill="var(--s0)" d="M360,140 h4.619039836583909 a4,4 0 0 1 4,4 v10 a4,4 0 0 1 -4,4 h-4.619039836583909 z"/>
+<g class="err"><line x1="366.1" y1="149.0" x2="371.2" y2="149.0"/><line x1="366.1" y1="145.0" x2="366.1" y2="153.0"/><line x1="371.2" y1="145.0" x2="371.2" y2="153.0"/></g>
+<text class="val" x="377.2" y="153.0">21.1</text>
 </g>
-<g class="bar" data-tip="parseLenient(&quot;5050-01-01T12:02:01.123Z&quot;) · JDK java.time: 784 ± 222.8 ns/op (39.48× of fastest)">
+<g class="bar" data-tip="parseLenient(&quot;5050-01-01T12:02:01.123Z&quot;) · JDK java.time: 796 ± 264.0 ns/op (37.69× of fastest)">
 <rect class="hit" x="360" y="159.0" width="590" height="20"/>
-<path fill="var(--s3)" d="M360,160 h95.90074354971262 a4,4 0 0 1 4,4 v10 a4,4 0 0 1 -4,4 h-95.90074354971262 z"/>
-<g class="err"><line x1="431.5" y1="169.0" x2="488.3" y2="169.0"/><line x1="431.5" y1="165.0" x2="431.5" y2="173.0"/><line x1="488.3" y1="165.0" x2="488.3" y2="173.0"/></g>
-<text class="val" x="494.3" y="173.0">784</text>
+<path fill="var(--s3)" d="M360,160 h320.84008861008317 a4,4 0 0 1 4,4 v10 a4,4 0 0 1 -4,4 h-320.84008861008317 z"/>
+<g class="err"><line x1="577.1" y1="169.0" x2="792.6" y2="169.0"/><line x1="577.1" y1="165.0" x2="577.1" y2="173.0"/><line x1="792.6" y1="165.0" x2="792.6" y2="173.0"/></g>
+<text class="val" x="798.6" y="173.0">796</text>
 </g>
 <line class="axis" x1="360" y1="20" x2="360" y2="194"/>
 </svg></div>
 <h4><code>parseLenient(&quot;2023-01-01T23:38:34.987654321+06:00&quot;)</code></h4>
 <table><tr><th>#</th><th>Candidate</th><th>ns/op</th><th>± error</th><th>rel</th></tr>
-<tr class="best"><td>1</td><td><i class="sw" style="background:var(--s0)"></i>ITU</td><td>25.1</td><td>12.3</td><td>1.00×</td></tr>
-<tr><td>2</td><td><i class="sw" style="background:var(--s3)"></i>JDK java.time</td><td>800</td><td>250.2</td><td>31.90×</td></tr>
+<tr class="best"><td>1</td><td><i class="sw" style="background:var(--s0)"></i>ITU</td><td>24.5</td><td>7.9</td><td>1.00×</td></tr>
+<tr><td>2</td><td><i class="sw" style="background:var(--s3)"></i>JDK java.time</td><td>789</td><td>334.1</td><td>32.24×</td></tr>
 </table>
 <h4><code>parseLenient(&quot;3074-07-01T12:02:01Z&quot;)</code></h4>
 <table><tr><th>#</th><th>Candidate</th><th>ns/op</th><th>± error</th><th>rel</th></tr>
-<tr class="best"><td>1</td><td><i class="sw" style="background:var(--s0)"></i>ITU</td><td>13.9</td><td>5.2</td><td>1.00×</td></tr>
-<tr><td>2</td><td><i class="sw" style="background:var(--s3)"></i>JDK java.time</td><td>820</td><td>2,765.0</td><td>58.85×</td></tr>
+<tr class="best"><td>1</td><td><i class="sw" style="background:var(--s0)"></i>ITU</td><td>13.8</td><td>5.5</td><td>1.00×</td></tr>
+<tr><td>2</td><td><i class="sw" style="background:var(--s3)"></i>JDK java.time</td><td>736</td><td>82.7</td><td>53.44×</td></tr>
 </table>
 <h4><code>parseLenient(&quot;5050-01-01T12:02:01.123Z&quot;)</code></h4>
 <table><tr><th>#</th><th>Candidate</th><th>ns/op</th><th>± error</th><th>rel</th></tr>
-<tr class="best"><td>1</td><td><i class="sw" style="background:var(--s0)"></i>ITU</td><td>19.8</td><td>8.5</td><td>1.00×</td></tr>
-<tr><td>2</td><td><i class="sw" style="background:var(--s3)"></i>JDK java.time</td><td>784</td><td>222.8</td><td>39.48×</td></tr>
+<tr class="best"><td>1</td><td><i class="sw" style="background:var(--s0)"></i>ITU</td><td>21.1</td><td>6.3</td><td>1.00×</td></tr>
+<tr><td>2</td><td><i class="sw" style="background:var(--s3)"></i>JDK java.time</td><td>796</td><td>264.0</td><td>37.69×</td></tr>
 </table>
 <h2>Date-time formatting</h2>
 <h3 class="method">formatSeconds <span>format UTC, second resolution</span></h3>
@@ -280,36 +286,32 @@ footer { margin-top:40px; color:var(--muted); font-size:12px }
 <title id="c3-t">formatSeconds - ns/op, lower is better</title>
 <line class="grid" x1="145.0" y1="20" x2="145.0" y2="78"/>
 <text class="tick" x="145.0" y="92" text-anchor="middle">0</text>
-<line class="grid" x1="290.0" y1="20" x2="290.0" y2="78"/>
-<text class="tick" x="290.0" y="92" text-anchor="middle">25</text>
-<line class="grid" x1="435.0" y1="20" x2="435.0" y2="78"/>
-<text class="tick" x="435.0" y="92" text-anchor="middle">50</text>
-<line class="grid" x1="580.0" y1="20" x2="580.0" y2="78"/>
-<text class="tick" x="580.0" y="92" text-anchor="middle">75</text>
-<line class="grid" x1="725.0" y1="20" x2="725.0" y2="78"/>
-<text class="tick" x="725.0" y="92" text-anchor="middle">100</text>
+<line class="grid" x1="386.7" y1="20" x2="386.7" y2="78"/>
+<text class="tick" x="386.7" y="92" text-anchor="middle">50</text>
+<line class="grid" x1="628.3" y1="20" x2="628.3" y2="78"/>
+<text class="tick" x="628.3" y="92" text-anchor="middle">100</text>
 <line class="grid" x1="870.0" y1="20" x2="870.0" y2="78"/>
-<text class="tick" x="870.0" y="92" text-anchor="middle">125</text>
+<text class="tick" x="870.0" y="92" text-anchor="middle">150</text>
 <text class="tick" x="956" y="14" text-anchor="end">ns/op</text>
 <text class="rowlabel" x="135" y="48.0" text-anchor="end">formatSeconds()</text>
-<g class="bar" data-tip="formatSeconds() · ITU: 16.0 ± 3.1 ns/op (1.00× of fastest)">
+<g class="bar" data-tip="formatSeconds() · ITU: 15.9 ± 3.2 ns/op (1.00× of fastest)">
 <rect class="hit" x="145" y="23.0" width="805" height="20"/>
-<path fill="var(--s0)" d="M145,24 h88.94006806107589 a4,4 0 0 1 4,4 v10 a4,4 0 0 1 -4,4 h-88.94006806107589 z"/>
-<g class="err"><line x1="219.7" y1="33.0" x2="256.2" y2="33.0"/><line x1="219.7" y1="29.0" x2="219.7" y2="37.0"/><line x1="256.2" y1="29.0" x2="256.2" y2="37.0"/></g>
-<text class="val" x="262.2" y="37.0">16.0</text>
+<path fill="var(--s0)" d="M145,24 h72.82855543285825 a4,4 0 0 1 4,4 v10 a4,4 0 0 1 -4,4 h-72.82855543285825 z"/>
+<g class="err"><line x1="206.4" y1="33.0" x2="237.2" y2="33.0"/><line x1="206.4" y1="29.0" x2="206.4" y2="37.0"/><line x1="237.2" y1="29.0" x2="237.2" y2="37.0"/></g>
+<text class="val" x="243.2" y="37.0">15.9</text>
 </g>
-<g class="bar" data-tip="formatSeconds() · JDK java.time: 102 ± 13.9 ns/op (6.36× of fastest)">
+<g class="bar" data-tip="formatSeconds() · JDK java.time: 102 ± 25.5 ns/op (6.42× of fastest)">
 <rect class="hit" x="145" y="43.0" width="805" height="20"/>
-<path fill="var(--s3)" d="M145,44 h587.504790961495 a4,4 0 0 1 4,4 v10 a4,4 0 0 1 -4,4 h-587.504790961495 z"/>
-<g class="err"><line x1="656.0" y1="53.0" x2="817.0" y2="53.0"/><line x1="656.0" y1="49.0" x2="656.0" y2="57.0"/><line x1="817.0" y1="49.0" x2="817.0" y2="57.0"/></g>
-<text class="val" x="823.0" y="57.0">102</text>
+<path fill="var(--s3)" d="M145,44 h489.5042666805102 a4,4 0 0 1 4,4 v10 a4,4 0 0 1 -4,4 h-489.5042666805102 z"/>
+<g class="err"><line x1="515.1" y1="53.0" x2="761.9" y2="53.0"/><line x1="515.1" y1="49.0" x2="515.1" y2="57.0"/><line x1="761.9" y1="49.0" x2="761.9" y2="57.0"/></g>
+<text class="val" x="767.9" y="57.0">102</text>
 </g>
 <line class="axis" x1="145" y1="20" x2="145" y2="78"/>
 </svg></div>
 <h4><code>formatSeconds()</code></h4>
 <table><tr><th>#</th><th>Candidate</th><th>ns/op</th><th>± error</th><th>rel</th></tr>
-<tr class="best"><td>1</td><td><i class="sw" style="background:var(--s0)"></i>ITU</td><td>16.0</td><td>3.1</td><td>1.00×</td></tr>
-<tr><td>2</td><td><i class="sw" style="background:var(--s3)"></i>JDK java.time</td><td>102</td><td>13.9</td><td>6.36×</td></tr>
+<tr class="best"><td>1</td><td><i class="sw" style="background:var(--s0)"></i>ITU</td><td>15.9</td><td>3.2</td><td>1.00×</td></tr>
+<tr><td>2</td><td><i class="sw" style="background:var(--s3)"></i>JDK java.time</td><td>102</td><td>25.5</td><td>6.42×</td></tr>
 </table>
 <h3 class="method">formatMillis <span>format UTC, millisecond resolution</span></h3>
 <div class="card"><div class="legend"><span class="key"><i style="background:var(--s0)"></i>ITU</span><span class="key"><i style="background:var(--s3)"></i>JDK java.time</span></div><svg class="chart" viewBox="0 0 960 98" width="100%" role="img" aria-labelledby="c4-t">
@@ -324,24 +326,24 @@ footer { margin-top:40px; color:var(--muted); font-size:12px }
 <text class="tick" x="870.0" y="92" text-anchor="middle">150</text>
 <text class="tick" x="956" y="14" text-anchor="end">ns/op</text>
 <text class="rowlabel" x="128" y="48.0" text-anchor="end">formatMillis()</text>
-<g class="bar" data-tip="formatMillis() · ITU: 19.2 ± 6.2 ns/op (1.00× of fastest)">
+<g class="bar" data-tip="formatMillis() · ITU: 19.1 ± 7.8 ns/op (1.00× of fastest)">
 <rect class="hit" x="138" y="23.0" width="812" height="20"/>
-<path fill="var(--s0)" d="M138,24 h89.56972589506543 a4,4 0 0 1 4,4 v10 a4,4 0 0 1 -4,4 h-89.56972589506543 z"/>
-<g class="err"><line x1="201.4" y1="33.0" x2="261.7" y2="33.0"/><line x1="201.4" y1="29.0" x2="201.4" y2="37.0"/><line x1="261.7" y1="29.0" x2="261.7" y2="37.0"/></g>
-<text class="val" x="267.7" y="37.0">19.2</text>
+<path fill="var(--s0)" d="M138,24 h89.03830903059293 a4,4 0 0 1 4,4 v10 a4,4 0 0 1 -4,4 h-89.03830903059293 z"/>
+<g class="err"><line x1="193.0" y1="33.0" x2="269.1" y2="33.0"/><line x1="193.0" y1="29.0" x2="193.0" y2="37.0"/><line x1="269.1" y1="29.0" x2="269.1" y2="37.0"/></g>
+<text class="val" x="275.1" y="37.0">19.1</text>
 </g>
-<g class="bar" data-tip="formatMillis() · JDK java.time: 114 ± 26.5 ns/op (5.97× of fastest)">
+<g class="bar" data-tip="formatMillis() · JDK java.time: 113 ± 33.7 ns/op (5.94× of fastest)">
 <rect class="hit" x="138" y="43.0" width="812" height="20"/>
-<path fill="var(--s3)" d="M138,44 h554.4193130178011 a4,4 0 0 1 4,4 v10 a4,4 0 0 1 -4,4 h-554.4193130178011 z"/>
-<g class="err"><line x1="567.2" y1="53.0" x2="825.7" y2="53.0"/><line x1="567.2" y1="49.0" x2="567.2" y2="57.0"/><line x1="825.7" y1="49.0" x2="825.7" y2="57.0"/></g>
-<text class="val" x="831.7" y="57.0">114</text>
+<path fill="var(--s3)" d="M138,44 h548.8944476217107 a4,4 0 0 1 4,4 v10 a4,4 0 0 1 -4,4 h-548.8944476217107 z"/>
+<g class="err"><line x1="526.3" y1="53.0" x2="855.5" y2="53.0"/><line x1="526.3" y1="49.0" x2="526.3" y2="57.0"/><line x1="855.5" y1="49.0" x2="855.5" y2="57.0"/></g>
+<text class="val" x="861.5" y="57.0">113</text>
 </g>
 <line class="axis" x1="138" y1="20" x2="138" y2="78"/>
 </svg></div>
 <h4><code>formatMillis()</code></h4>
 <table><tr><th>#</th><th>Candidate</th><th>ns/op</th><th>± error</th><th>rel</th></tr>
-<tr class="best"><td>1</td><td><i class="sw" style="background:var(--s0)"></i>ITU</td><td>19.2</td><td>6.2</td><td>1.00×</td></tr>
-<tr><td>2</td><td><i class="sw" style="background:var(--s3)"></i>JDK java.time</td><td>114</td><td>26.5</td><td>5.97×</td></tr>
+<tr class="best"><td>1</td><td><i class="sw" style="background:var(--s0)"></i>ITU</td><td>19.1</td><td>7.8</td><td>1.00×</td></tr>
+<tr><td>2</td><td><i class="sw" style="background:var(--s3)"></i>JDK java.time</td><td>113</td><td>33.7</td><td>5.94×</td></tr>
 </table>
 <h3 class="method">formatNanos <span>format UTC, nanosecond resolution</span></h3>
 <div class="card"><div class="legend"><span class="key"><i style="background:var(--s0)"></i>ITU</span><span class="key"><i style="background:var(--s3)"></i>JDK java.time</span></div><svg class="chart" viewBox="0 0 960 98" width="100%" role="img" aria-labelledby="c5-t">
@@ -358,24 +360,24 @@ footer { margin-top:40px; color:var(--muted); font-size:12px }
 <text class="tick" x="870.0" y="92" text-anchor="middle">200</text>
 <text class="tick" x="956" y="14" text-anchor="end">ns/op</text>
 <text class="rowlabel" x="121" y="48.0" text-anchor="end">formatNanos()</text>
-<g class="bar" data-tip="formatNanos() · ITU: 33.7 ± 7.9 ns/op (1.00× of fastest)">
+<g class="bar" data-tip="formatNanos() · ITU: 33.7 ± 6.1 ns/op (1.00× of fastest)">
 <rect class="hit" x="131" y="23.0" width="819" height="20"/>
-<path fill="var(--s0)" d="M131,24 h120.43467602121814 a4,4 0 0 1 4,4 v10 a4,4 0 0 1 -4,4 h-120.43467602121814 z"/>
-<g class="err"><line x1="226.4" y1="33.0" x2="284.4" y2="33.0"/><line x1="226.4" y1="29.0" x2="226.4" y2="37.0"/><line x1="284.4" y1="29.0" x2="284.4" y2="37.0"/></g>
-<text class="val" x="290.4" y="37.0">33.7</text>
+<path fill="var(--s0)" d="M131,24 h120.45329987977172 a4,4 0 0 1 4,4 v10 a4,4 0 0 1 -4,4 h-120.45329987977172 z"/>
+<g class="err"><line x1="233.1" y1="33.0" x2="277.8" y2="33.0"/><line x1="233.1" y1="29.0" x2="233.1" y2="37.0"/><line x1="277.8" y1="29.0" x2="277.8" y2="37.0"/></g>
+<text class="val" x="283.8" y="37.0">33.7</text>
 </g>
-<g class="bar" data-tip="formatNanos() · JDK java.time: 120 ± 47.1 ns/op (3.57× of fastest)">
+<g class="bar" data-tip="formatNanos() · JDK java.time: 118 ± 47.9 ns/op (3.51× of fastest)">
 <rect class="hit" x="131" y="43.0" width="819" height="20"/>
-<path fill="var(--s3)" d="M131,44 h440.4401279602132 a4,4 0 0 1 4,4 v10 a4,4 0 0 1 -4,4 h-440.4401279602132 z"/>
-<g class="err"><line x1="401.6" y1="53.0" x2="749.3" y2="53.0"/><line x1="401.6" y1="49.0" x2="401.6" y2="57.0"/><line x1="749.3" y1="49.0" x2="749.3" y2="57.0"/></g>
-<text class="val" x="755.3" y="57.0">120</text>
+<path fill="var(--s3)" d="M131,44 h432.6378370268783 a4,4 0 0 1 4,4 v10 a4,4 0 0 1 -4,4 h-432.6378370268783 z"/>
+<g class="err"><line x1="390.7" y1="53.0" x2="744.5" y2="53.0"/><line x1="390.7" y1="49.0" x2="390.7" y2="57.0"/><line x1="744.5" y1="49.0" x2="744.5" y2="57.0"/></g>
+<text class="val" x="750.5" y="57.0">118</text>
 </g>
 <line class="axis" x1="131" y1="20" x2="131" y2="78"/>
 </svg></div>
 <h4><code>formatNanos()</code></h4>
 <table><tr><th>#</th><th>Candidate</th><th>ns/op</th><th>± error</th><th>rel</th></tr>
-<tr class="best"><td>1</td><td><i class="sw" style="background:var(--s0)"></i>ITU</td><td>33.7</td><td>7.9</td><td>1.00×</td></tr>
-<tr><td>2</td><td><i class="sw" style="background:var(--s3)"></i>JDK java.time</td><td>120</td><td>47.1</td><td>3.57×</td></tr>
+<tr class="best"><td>1</td><td><i class="sw" style="background:var(--s0)"></i>ITU</td><td>33.7</td><td>6.1</td><td>1.00×</td></tr>
+<tr><td>2</td><td><i class="sw" style="background:var(--s3)"></i>JDK java.time</td><td>118</td><td>47.9</td><td>3.51×</td></tr>
 </table>
 <h2>Duration</h2>
 <h3 class="method">parseDuration <span>ISO-8601 duration</span></h3>
@@ -384,53 +386,53 @@ footer { margin-top:40px; color:var(--muted); font-size:12px }
 <line class="grid" x1="341.0" y1="20" x2="341.0" y2="136"/>
 <text class="tick" x="341.0" y="150" text-anchor="middle">0</text>
 <line class="grid" x1="446.8" y1="20" x2="446.8" y2="136"/>
-<text class="tick" x="446.8" y="150" text-anchor="middle">250</text>
+<text class="tick" x="446.8" y="150" text-anchor="middle">200</text>
 <line class="grid" x1="552.6" y1="20" x2="552.6" y2="136"/>
-<text class="tick" x="552.6" y="150" text-anchor="middle">500</text>
+<text class="tick" x="552.6" y="150" text-anchor="middle">400</text>
 <line class="grid" x1="658.4" y1="20" x2="658.4" y2="136"/>
-<text class="tick" x="658.4" y="150" text-anchor="middle">750</text>
+<text class="tick" x="658.4" y="150" text-anchor="middle">600</text>
 <line class="grid" x1="764.2" y1="20" x2="764.2" y2="136"/>
-<text class="tick" x="764.2" y="150" text-anchor="middle">1,000</text>
+<text class="tick" x="764.2" y="150" text-anchor="middle">800</text>
 <line class="grid" x1="870.0" y1="20" x2="870.0" y2="136"/>
-<text class="tick" x="870.0" y="150" text-anchor="middle">1,250</text>
+<text class="tick" x="870.0" y="150" text-anchor="middle">1,000</text>
 <text class="tick" x="956" y="14" text-anchor="end">ns/op</text>
 <text class="rowlabel" x="331" y="48.0" text-anchor="end">parseDuration(&quot;-P180DT23H27M19.193964536S&quot;)</text>
-<g class="bar" data-tip="parseDuration(&quot;-P180DT23H27M19.193964536S&quot;) · ITU: 51.8 ± 31.3 ns/op (1.00× of fastest)">
+<g class="bar" data-tip="parseDuration(&quot;-P180DT23H27M19.193964536S&quot;) · ITU: 51.5 ± 11.7 ns/op (1.00× of fastest)">
 <rect class="hit" x="341" y="23.0" width="609" height="20"/>
-<path fill="var(--s0)" d="M341,24 h17.90470940165858 a4,4 0 0 1 4,4 v10 a4,4 0 0 1 -4,4 h-17.90470940165858 z"/>
-<g class="err"><line x1="349.7" y1="33.0" x2="376.1" y2="33.0"/><line x1="349.7" y1="29.0" x2="349.7" y2="37.0"/><line x1="376.1" y1="29.0" x2="376.1" y2="37.0"/></g>
-<text class="val" x="382.1" y="37.0">51.8</text>
+<path fill="var(--s0)" d="M341,24 h23.21994391677822 a4,4 0 0 1 4,4 v10 a4,4 0 0 1 -4,4 h-23.21994391677822 z"/>
+<g class="err"><line x1="362.0" y1="33.0" x2="374.4" y2="33.0"/><line x1="362.0" y1="29.0" x2="362.0" y2="37.0"/><line x1="374.4" y1="29.0" x2="374.4" y2="37.0"/></g>
+<text class="val" x="380.4" y="37.0">51.5</text>
 </g>
-<g class="bar" data-tip="parseDuration(&quot;-P180DT23H27M19.193964536S&quot;) · JDK java.time: 259 ± 788.1 ns/op (5.00× of fastest)">
+<g class="bar" data-tip="parseDuration(&quot;-P180DT23H27M19.193964536S&quot;) · JDK java.time: 256 ± 551.0 ns/op (4.97× of fastest)">
 <rect class="hit" x="341" y="43.0" width="609" height="20"/>
-<path fill="var(--s3)" d="M341,44 h105.50513209389277 a4,4 0 0 1 4,4 v10 a4,4 0 0 1 -4,4 h-105.50513209389277 z"/>
-<g class="err"><line x1="341.0" y1="53.0" x2="784.0" y2="53.0"/><line x1="341.0" y1="49.0" x2="341.0" y2="57.0"/><line x1="784.0" y1="49.0" x2="784.0" y2="57.0"/></g>
-<text class="val" x="790.0" y="57.0">259</text>
+<path fill="var(--s3)" d="M341,44 h131.22136986225735 a4,4 0 0 1 4,4 v10 a4,4 0 0 1 -4,4 h-131.22136986225735 z"/>
+<g class="err"><line x1="341.0" y1="53.0" x2="767.7" y2="53.0"/><line x1="341.0" y1="49.0" x2="341.0" y2="57.0"/><line x1="767.7" y1="49.0" x2="767.7" y2="57.0"/></g>
+<text class="val" x="773.7" y="57.0">256</text>
 </g>
 <text class="rowlabel" x="331" y="106.0" text-anchor="end">parseDuration(&quot;PT2H30M&quot;)</text>
-<g class="bar" data-tip="parseDuration(&quot;PT2H30M&quot;) · ITU: 24.6 ± 8.2 ns/op (1.00× of fastest)">
+<g class="bar" data-tip="parseDuration(&quot;PT2H30M&quot;) · ITU: 24.2 ± 7.8 ns/op (1.00× of fastest)">
 <rect class="hit" x="341" y="81.0" width="609" height="20"/>
-<path fill="var(--s0)" d="M341,82 h6.404341404989793 a4,4 0 0 1 4,4 v10 a4,4 0 0 1 -4,4 h-6.404341404989793 z"/>
-<g class="err"><line x1="347.9" y1="91.0" x2="354.9" y2="91.0"/><line x1="347.9" y1="87.0" x2="347.9" y2="95.0"/><line x1="354.9" y1="87.0" x2="354.9" y2="95.0"/></g>
-<text class="val" x="360.9" y="95.0">24.6</text>
+<path fill="var(--s0)" d="M341,82 h8.785382118491157 a4,4 0 0 1 4,4 v10 a4,4 0 0 1 -4,4 h-8.785382118491157 z"/>
+<g class="err"><line x1="349.7" y1="91.0" x2="357.9" y2="91.0"/><line x1="349.7" y1="87.0" x2="349.7" y2="95.0"/><line x1="357.9" y1="87.0" x2="357.9" y2="95.0"/></g>
+<text class="val" x="363.9" y="95.0">24.2</text>
 </g>
-<g class="bar" data-tip="parseDuration(&quot;PT2H30M&quot;) · JDK java.time: 133 ± 22.7 ns/op (5.42× of fastest)">
+<g class="bar" data-tip="parseDuration(&quot;PT2H30M&quot;) · JDK java.time: 132 ± 50.5 ns/op (5.45× of fastest)">
 <rect class="hit" x="341" y="101.0" width="609" height="20"/>
-<path fill="var(--s3)" d="M341,102 h52.35185683799091 a4,4 0 0 1 4,4 v10 a4,4 0 0 1 -4,4 h-52.35185683799091 z"/>
-<g class="err"><line x1="387.7" y1="111.0" x2="407.0" y2="111.0"/><line x1="387.7" y1="107.0" x2="387.7" y2="115.0"/><line x1="407.0" y1="107.0" x2="407.0" y2="115.0"/></g>
-<text class="val" x="413.0" y="115.0">133</text>
+<path fill="var(--s3)" d="M341,102 h65.68607970944043 a4,4 0 0 1 4,4 v10 a4,4 0 0 1 -4,4 h-65.68607970944043 z"/>
+<g class="err"><line x1="384.0" y1="111.0" x2="437.4" y2="111.0"/><line x1="384.0" y1="107.0" x2="384.0" y2="115.0"/><line x1="437.4" y1="107.0" x2="437.4" y2="115.0"/></g>
+<text class="val" x="443.4" y="115.0">132</text>
 </g>
 <line class="axis" x1="341" y1="20" x2="341" y2="136"/>
 </svg></div>
 <h4><code>parseDuration(&quot;-P180DT23H27M19.193964536S&quot;)</code></h4>
 <table><tr><th>#</th><th>Candidate</th><th>ns/op</th><th>± error</th><th>rel</th></tr>
-<tr class="best"><td>1</td><td><i class="sw" style="background:var(--s0)"></i>ITU</td><td>51.8</td><td>31.3</td><td>1.00×</td></tr>
-<tr><td>2</td><td><i class="sw" style="background:var(--s3)"></i>JDK java.time</td><td>259</td><td>788.1</td><td>5.00×</td></tr>
+<tr class="best"><td>1</td><td><i class="sw" style="background:var(--s0)"></i>ITU</td><td>51.5</td><td>11.7</td><td>1.00×</td></tr>
+<tr><td>2</td><td><i class="sw" style="background:var(--s3)"></i>JDK java.time</td><td>256</td><td>551.0</td><td>4.97×</td></tr>
 </table>
 <h4><code>parseDuration(&quot;PT2H30M&quot;)</code></h4>
 <table><tr><th>#</th><th>Candidate</th><th>ns/op</th><th>± error</th><th>rel</th></tr>
-<tr class="best"><td>1</td><td><i class="sw" style="background:var(--s0)"></i>ITU</td><td>24.6</td><td>8.2</td><td>1.00×</td></tr>
-<tr><td>2</td><td><i class="sw" style="background:var(--s3)"></i>JDK java.time</td><td>133</td><td>22.7</td><td>5.42×</td></tr>
+<tr class="best"><td>1</td><td><i class="sw" style="background:var(--s0)"></i>ITU</td><td>24.2</td><td>7.8</td><td>1.00×</td></tr>
+<tr><td>2</td><td><i class="sw" style="background:var(--s3)"></i>JDK java.time</td><td>132</td><td>50.5</td><td>5.45×</td></tr>
 </table>
 <h3 class="method">formatDuration <span>ISO-8601 duration</span></h3>
 <div class="card"><div class="legend"><span class="key"><i style="background:var(--s0)"></i>ITU</span><span class="key"><i style="background:var(--s2)"></i>ITU (hours)</span><span class="key"><i style="background:var(--s3)"></i>JDK java.time</span></div><svg class="chart" viewBox="0 0 960 196" width="100%" role="img" aria-labelledby="c7-t">
@@ -449,58 +451,58 @@ footer { margin-top:40px; color:var(--muted); font-size:12px }
 <text class="tick" x="870.0" y="190" text-anchor="middle">50</text>
 <text class="tick" x="956" y="14" text-anchor="end">ns/op</text>
 <text class="rowlabel" x="338" y="58.0" text-anchor="end">formatDuration(&quot;-P180DT23H27M19.193964536S&quot;)</text>
-<g class="bar" data-tip="formatDuration(&quot;-P180DT23H27M19.193964536S&quot;) · ITU: 26.7 ± 7.3 ns/op (1.00× of fastest)">
+<g class="bar" data-tip="formatDuration(&quot;-P180DT23H27M19.193964536S&quot;) · ITU: 26.9 ± 5.0 ns/op (1.00× of fastest)">
 <rect class="hit" x="348" y="23.0" width="602" height="20"/>
-<path fill="var(--s0)" d="M348,24 h274.38128090156647 a4,4 0 0 1 4,4 v10 a4,4 0 0 1 -4,4 h-274.38128090156647 z"/>
-<g class="err"><line x1="549.7" y1="33.0" x2="703.1" y2="33.0"/><line x1="549.7" y1="29.0" x2="549.7" y2="37.0"/><line x1="703.1" y1="29.0" x2="703.1" y2="37.0"/></g>
-<text class="val" x="709.1" y="37.0">26.7</text>
+<path fill="var(--s0)" d="M348,24 h277.31529662494927 a4,4 0 0 1 4,4 v10 a4,4 0 0 1 -4,4 h-277.31529662494927 z"/>
+<g class="err"><line x1="577.1" y1="33.0" x2="681.5" y2="33.0"/><line x1="577.1" y1="29.0" x2="577.1" y2="37.0"/><line x1="681.5" y1="29.0" x2="681.5" y2="37.0"/></g>
+<text class="val" x="687.5" y="37.0">26.9</text>
 </g>
-<g class="bar" data-tip="formatDuration(&quot;-P180DT23H27M19.193964536S&quot;) · ITU (hours): 32.1 ± 9.9 ns/op (1.20× of fastest)">
+<g class="bar" data-tip="formatDuration(&quot;-P180DT23H27M19.193964536S&quot;) · ITU (hours): 32.2 ± 12.0 ns/op (1.20× of fastest)">
 <rect class="hit" x="348" y="43.0" width="602" height="20"/>
-<path fill="var(--s2)" d="M348,44 h331.3339512234694 a4,4 0 0 1 4,4 v10 a4,4 0 0 1 -4,4 h-331.3339512234694 z"/>
-<g class="err"><line x1="579.7" y1="53.0" x2="787.0" y2="53.0"/><line x1="579.7" y1="49.0" x2="579.7" y2="57.0"/><line x1="787.0" y1="49.0" x2="787.0" y2="57.0"/></g>
-<text class="val" x="793.0" y="57.0">32.1</text>
+<path fill="var(--s2)" d="M348,44 h332.3398871912559 a4,4 0 0 1 4,4 v10 a4,4 0 0 1 -4,4 h-332.3398871912559 z"/>
+<g class="err"><line x1="558.6" y1="53.0" x2="810.1" y2="53.0"/><line x1="558.6" y1="49.0" x2="558.6" y2="57.0"/><line x1="810.1" y1="49.0" x2="810.1" y2="57.0"/></g>
+<text class="val" x="816.1" y="57.0">32.2</text>
 </g>
-<g class="bar" data-tip="formatDuration(&quot;-P180DT23H27M19.193964536S&quot;) · JDK java.time: 31.9 ± 10.4 ns/op (1.20× of fastest)">
+<g class="bar" data-tip="formatDuration(&quot;-P180DT23H27M19.193964536S&quot;) · JDK java.time: 30.7 ± 7.1 ns/op (1.14× of fastest)">
 <rect class="hit" x="348" y="63.0" width="602" height="20"/>
-<path fill="var(--s3)" d="M348,64 h328.8625005630729 a4,4 0 0 1 4,4 v10 a4,4 0 0 1 -4,4 h-328.8625005630729 z"/>
-<g class="err"><line x1="572.2" y1="73.0" x2="789.5" y2="73.0"/><line x1="572.2" y1="69.0" x2="572.2" y2="77.0"/><line x1="789.5" y1="69.0" x2="789.5" y2="77.0"/></g>
-<text class="val" x="795.5" y="77.0">31.9</text>
+<path fill="var(--s3)" d="M348,64 h316.87128165432705 a4,4 0 0 1 4,4 v10 a4,4 0 0 1 -4,4 h-316.87128165432705 z"/>
+<g class="err"><line x1="594.7" y1="73.0" x2="743.1" y2="73.0"/><line x1="594.7" y1="69.0" x2="594.7" y2="77.0"/><line x1="743.1" y1="69.0" x2="743.1" y2="77.0"/></g>
+<text class="val" x="749.1" y="77.0">30.7</text>
 </g>
 <text class="rowlabel" x="338" y="136.0" text-anchor="end">formatDuration(&quot;PT2H30M&quot;)</text>
-<g class="bar" data-tip="formatDuration(&quot;PT2H30M&quot;) · ITU: 14.3 ± 13.6 ns/op (1.43× of fastest)">
+<g class="bar" data-tip="formatDuration(&quot;PT2H30M&quot;) · ITU: 13.3 ± 4.2 ns/op (1.34× of fastest)">
 <rect class="hit" x="348" y="101.0" width="602" height="20"/>
-<path fill="var(--s0)" d="M348,102 h145.0780385368338 a4,4 0 0 1 4,4 v10 a4,4 0 0 1 -4,4 h-145.0780385368338 z"/>
-<g class="err"><line x1="354.6" y1="111.0" x2="639.6" y2="111.0"/><line x1="354.6" y1="107.0" x2="354.6" y2="115.0"/><line x1="639.6" y1="107.0" x2="639.6" y2="115.0"/></g>
-<text class="val" x="645.6" y="115.0">14.3</text>
+<path fill="var(--s0)" d="M348,102 h134.5562361040503 a4,4 0 0 1 4,4 v10 a4,4 0 0 1 -4,4 h-134.5562361040503 z"/>
+<g class="err"><line x1="442.9" y1="111.0" x2="530.3" y2="111.0"/><line x1="442.9" y1="107.0" x2="442.9" y2="115.0"/><line x1="530.3" y1="107.0" x2="530.3" y2="115.0"/></g>
+<text class="val" x="536.3" y="115.0">13.3</text>
 </g>
-<g class="bar" data-tip="formatDuration(&quot;PT2H30M&quot;) · ITU (hours): 12.8 ± 4.8 ns/op (1.29× of fastest)">
+<g class="bar" data-tip="formatDuration(&quot;PT2H30M&quot;) · ITU (hours): 12.9 ± 1.2 ns/op (1.31× of fastest)">
 <rect class="hit" x="348" y="121.0" width="602" height="20"/>
-<path fill="var(--s2)" d="M348,122 h130.01997563747506 a4,4 0 0 1 4,4 v10 a4,4 0 0 1 -4,4 h-130.01997563747506 z"/>
-<g class="err"><line x1="431.5" y1="131.0" x2="532.5" y2="131.0"/><line x1="431.5" y1="127.0" x2="431.5" y2="135.0"/><line x1="532.5" y1="127.0" x2="532.5" y2="135.0"/></g>
-<text class="val" x="538.5" y="135.0">12.8</text>
+<path fill="var(--s2)" d="M348,122 h130.9695390405218 a4,4 0 0 1 4,4 v10 a4,4 0 0 1 -4,4 h-130.9695390405218 z"/>
+<g class="err"><line x1="470.9" y1="131.0" x2="495.0" y2="131.0"/><line x1="470.9" y1="127.0" x2="470.9" y2="135.0"/><line x1="495.0" y1="127.0" x2="495.0" y2="135.0"/></g>
+<text class="val" x="501.0" y="135.0">12.9</text>
 </g>
-<g class="bar" data-tip="formatDuration(&quot;PT2H30M&quot;) · JDK java.time: 9.96 ± 4.3 ns/op (1.00× of fastest)">
+<g class="bar" data-tip="formatDuration(&quot;PT2H30M&quot;) · JDK java.time: 9.87 ± 2.6 ns/op (1.00× of fastest)">
 <rect class="hit" x="348" y="141.0" width="602" height="20"/>
-<path fill="var(--s3)" d="M348,142 h100.0337184134446 a4,4 0 0 1 4,4 v10 a4,4 0 0 1 -4,4 h-100.0337184134446 z"/>
-<g class="err"><line x1="407.3" y1="151.0" x2="496.7" y2="151.0"/><line x1="407.3" y1="147.0" x2="407.3" y2="155.0"/><line x1="496.7" y1="147.0" x2="496.7" y2="155.0"/></g>
-<text class="val" x="502.7" y="155.0">9.96</text>
+<path fill="var(--s3)" d="M348,142 h99.06609832225399 a4,4 0 0 1 4,4 v10 a4,4 0 0 1 -4,4 h-99.06609832225399 z"/>
+<g class="err"><line x1="424.0" y1="151.0" x2="478.2" y2="151.0"/><line x1="424.0" y1="147.0" x2="424.0" y2="155.0"/><line x1="478.2" y1="147.0" x2="478.2" y2="155.0"/></g>
+<text class="val" x="484.2" y="155.0">9.87</text>
 </g>
 <line class="axis" x1="348" y1="20" x2="348" y2="176"/>
 </svg></div>
 <h4><code>formatDuration(&quot;-P180DT23H27M19.193964536S&quot;)</code></h4>
 <table><tr><th>#</th><th>Candidate</th><th>ns/op</th><th>± error</th><th>rel</th></tr>
-<tr class="best"><td>1</td><td><i class="sw" style="background:var(--s0)"></i>ITU</td><td>26.7</td><td>7.3</td><td>1.00×</td></tr>
-<tr><td>2</td><td><i class="sw" style="background:var(--s3)"></i>JDK java.time</td><td>31.9</td><td>10.4</td><td>1.20×</td></tr>
-<tr><td>3</td><td><i class="sw" style="background:var(--s2)"></i>ITU (hours)</td><td>32.1</td><td>9.9</td><td>1.20×</td></tr>
+<tr class="best"><td>1</td><td><i class="sw" style="background:var(--s0)"></i>ITU</td><td>26.9</td><td>5.0</td><td>1.00×</td></tr>
+<tr><td>2</td><td><i class="sw" style="background:var(--s3)"></i>JDK java.time</td><td>30.7</td><td>7.1</td><td>1.14×</td></tr>
+<tr><td>3</td><td><i class="sw" style="background:var(--s2)"></i>ITU (hours)</td><td>32.2</td><td>12.0</td><td>1.20×</td></tr>
 </table>
 <h4><code>formatDuration(&quot;PT2H30M&quot;)</code></h4>
 <table><tr><th>#</th><th>Candidate</th><th>ns/op</th><th>± error</th><th>rel</th></tr>
-<tr class="best"><td>1</td><td><i class="sw" style="background:var(--s3)"></i>JDK java.time</td><td>9.96</td><td>4.3</td><td>1.00×</td></tr>
-<tr><td>2</td><td><i class="sw" style="background:var(--s2)"></i>ITU (hours)</td><td>12.8</td><td>4.8</td><td>1.29×</td></tr>
-<tr><td>3</td><td><i class="sw" style="background:var(--s0)"></i>ITU</td><td>14.3</td><td>13.6</td><td>1.43×</td></tr>
+<tr class="best"><td>1</td><td><i class="sw" style="background:var(--s3)"></i>JDK java.time</td><td>9.87</td><td>2.6</td><td>1.00×</td></tr>
+<tr><td>2</td><td><i class="sw" style="background:var(--s2)"></i>ITU (hours)</td><td>12.9</td><td>1.2</td><td>1.31×</td></tr>
+<tr><td>3</td><td><i class="sw" style="background:var(--s0)"></i>ITU</td><td>13.3</td><td>4.2</td><td>1.34×</td></tr>
 </table>
-<footer>Generated 2026-09-18 10:43 by report.py · JMH 1.37</footer>
+<footer>Generated 2026-09-18 10:57 by report.py · JMH 1.37</footer>
 <div id="tip"></div>
 <script>
 (function(){var t=document.getElementById('tip');
