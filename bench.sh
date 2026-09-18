@@ -10,6 +10,9 @@
 # Results land in results/<timestamp>-<suite>-<mode>/ with the raw JMH JSON,
 # report.md, report.html and (if matplotlib is installed) report.png.
 # results/latest always points at the most recent run.
+#
+# results/ is gitignored. --publish copies the run's report.html into docs/,
+# which is what GitHub Pages serves at https://ethlo.github.io/date-time-wars/.
 
 set -euo pipefail
 
@@ -18,6 +21,8 @@ cd "$SCRIPT_DIR"
 
 JAR="target/date-time-wars.jar"
 RESULTS_ROOT="results"
+PAGES_DIR="docs"
+PAGES_URL="https://ethlo.github.io/date-time-wars/"
 
 # --- defaults -----------------------------------------------------------------
 suites=()
@@ -34,6 +39,7 @@ do_list=0
 dry_run=0
 no_report=0
 open_report=0
+do_publish=0
 verbose=0
 baseline=""
 jvm_args="-XX:+UnlockDiagnosticVMOptions -XX:+TieredCompilation -XX:+AlwaysPreTouch"
@@ -80,6 +86,8 @@ ${C_BOLD}Output${C_RESET}
   --baseline DIR    compare against a previous run's directory (or jmh-result.json)
   --no-report       skip report generation, keep only the raw JMH json
   --open            open report.html in the browser when done
+  --publish         copy report.html to $PAGES_DIR/ for GitHub Pages and stage it in git
+                    (published at $PAGES_URL)
 
 ${C_BOLD}Other${C_RESET}
   -b, --build       run 'mvn -q package' first (automatic if the jar is missing)
@@ -94,6 +102,7 @@ ${C_BOLD}Examples${C_RESET}
   ./bench.sh --quick --duration
   ./bench.sh --parse --lenient --gc -n "itu-1.15"
   ./bench.sh --thorough --all --async --baseline results/latest
+  ./bench.sh --thorough --all --publish
 EOF
 }
 
@@ -112,6 +121,7 @@ while [[ $# -gt 0 ]]; do
         --baseline)    baseline="$2"; shift ;;
         --no-report)   no_report=1 ;;
         --open)        open_report=1 ;;
+        --publish)     do_publish=1 ;;
         -b|--build)    do_build=1 ;;
         -l|--list)     do_list=1 ;;
         --jvm-args)    jvm_args="$2"; shift ;;
@@ -233,7 +243,6 @@ ok "JMH finished in ${elapsed}s → $result_json"
     echo "iterations=${iter_args[*]}"
     echo "jvm_args=$jvm_args"
     echo "profilers=$([[ $prof_gc -eq 1 ]] && echo -n 'gc ')$([[ $prof_async -eq 1 ]] && echo -n "async:$async_event")"
-    echo "host=$(hostname)"
     echo "cpu=$(grep -m1 'model name' /proc/cpuinfo 2>/dev/null | cut -d: -f2- | sed 's/^ *//' || sysctl -n machdep.cpu.brand_string 2>/dev/null || echo unknown)"
     echo "os=$( (source /etc/os-release 2>/dev/null && echo "$PRETTY_NAME") || uname -sr)"
     echo "java=$(java -version 2>&1 | head -n1)"
@@ -253,4 +262,20 @@ ok "Done. Latest results: $RESULTS_ROOT/latest → $out_dir"
 
 if [[ $open_report -eq 1 && -f "$out_dir/report.html" ]]; then
     (xdg-open "$out_dir/report.html" 2>/dev/null || open "$out_dir/report.html" 2>/dev/null) &
+fi
+
+# --- publish to GitHub Pages --------------------------------------------------
+if [[ $do_publish -eq 1 ]]; then
+    if [[ ! -f "$out_dir/report.html" ]]; then
+        warn "Nothing to publish: no report.html in $out_dir"
+    else
+        [[ "$mode" == "thorough" ]] || warn "Publishing $mode numbers; --thorough is what the README claims"
+        mkdir -p "$PAGES_DIR"
+        touch "$PAGES_DIR/.nojekyll"
+        cp "$out_dir/report.html" "$PAGES_DIR/index.html"
+        [[ -f "$out_dir/report.png" ]] && cp "$out_dir/report.png" "$PAGES_DIR/report.png"
+        git add "$PAGES_DIR" || warn "Could not stage $PAGES_DIR (not a git checkout?)"
+        ok "Staged $PAGES_DIR/ for GitHub Pages → $PAGES_URL"
+        info "Publish with: git commit -m 'Update benchmark report' && git push"
+    fi
 fi

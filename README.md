@@ -2,6 +2,8 @@
 
 ### A micro-benchmark of different date-time parsers and formatters.
 
+**[» Latest benchmark report](https://ethlo.github.io/date-time-wars/)**
+
 ## Candidates
 
 * ITU - Internet Time Utility - https://github.com/ethlo/itu (`ITU.parseDateTime`, `ITU.parseLenient`, `ITU.formatUtc*`, `ITU.parseDuration`)
@@ -98,6 +100,21 @@ a symlink.
 | `run.properties` | environment and settings: CPU, OS, JDK, git rev, suite, mode, iteration args, elapsed |
 | `jmh.log` | full JMH console output |
 | `profiles/` | async-profiler flame graphs, when run with `--async` |
+
+`results/` is gitignored, so runs stay local until you publish one.
+
+### Publishing
+
+`--publish` copies the run's `report.html` to `docs/index.html` and stages it. GitHub Pages serves that
+directory at <https://ethlo.github.io/date-time-wars/>, which is where the ITU README links.
+
+```shell
+./bench.sh --thorough --all --publish
+git commit -m "Update benchmark report" && git push
+```
+
+Use `--thorough` for anything you publish. The report records the CPU, OS, JDK and git revision behind the
+numbers, so a published run stays traceable.
 
 ### Comparing runs
 

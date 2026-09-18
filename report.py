@@ -189,7 +189,7 @@ def environment(results, props):
     env["Iterations"] = "%s fork(s), %s × %s warmup, %s × %s measurement" % (
         e.get("forks"), e.get("warmupIterations"), e.get("warmupTime"),
         e.get("measurementIterations"), e.get("measurementTime"))
-    for k, name in (("cpu", "CPU"), ("os", "OS"), ("host", "Host"), ("git", "Git")):
+    for k, name in (("cpu", "CPU"), ("os", "OS"), ("git", "Git")):
         if props.get(k):
             env[name] = props[k]
     return env
