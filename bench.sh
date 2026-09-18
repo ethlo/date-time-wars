@@ -70,9 +70,11 @@ ${C_BOLD}Suites${C_RESET} (which benchmarks to run - combine freely, default is 
   <regex>           a raw JMH benchmark regex, e.g. 'itu.*parse'
 
 ${C_BOLD}Modes${C_RESET} (how long to run)
-  --quick           1 fork,  2×1s warmup,  3×1s measure   (~10s per benchmark, sanity check)
+  --quick           1 fork,  2×1s warmup,  3×1s measure   (sanity check, wide error bars)
   --normal          1 fork,  3×2s warmup,  5×2s measure   (default)
-  --thorough        3 forks, 5×3s warmup, 10×3s measure   (publishable numbers)
+  --thorough        2 forks, 3×1s warmup, 10×1s measure   (publishable numbers, ~2% error)
+  --paranoid        3 forks, 5×3s warmup, 10×3s measure   (5× slower than --thorough for
+                                                           barely tighter bounds)
 
 ${C_BOLD}Profiling${C_RESET}
   --gc              add the JMH gc profiler (allocation per op etc.)
@@ -110,7 +112,7 @@ EOF
 while [[ $# -gt 0 ]]; do
     case "$1" in
         --all|--parse|--lenient|--format|--datetime|--duration) suites+=("${1#--}") ;;
-        --quick|--normal|--thorough)       mode="${1#--}" ;;
+        --quick|--normal|--thorough|--paranoid) mode="${1#--}" ;;
         --gc)          prof_gc=1 ;;
         --async)
             prof_async=1
@@ -152,10 +154,16 @@ suite="$(IFS=+; echo "${suites[*]}")"
 pattern="$(IFS='|'; echo "${patterns[*]}")"
 
 # --- resolve mode -> JMH iteration args --------------------------------------
+# JMH pools every measurement iteration across forks, and the reported error is
+# t(n-1, 0.9995) * s / sqrt(n) with n = forks * iterations. That multiplier falls
+# off a cliff with the iteration *count* (18.2 at n=3, 1.5 at n=10), so many short
+# iterations buy far tighter error bars than a few long ones. --thorough is tuned
+# on that: n=20 lands ~2% median error, same as --paranoid's n=30, in 1/5 the time.
 case "$mode" in
     quick)    iter_args=(-f 1 -wi 2 -w 1s -i 3  -r 1s) ;;
     normal)   iter_args=(-f 1 -wi 3 -w 2s -i 5  -r 2s) ;;
-    thorough) iter_args=(-f 3 -wi 5 -w 3s -i 10 -r 3s) ;;
+    thorough) iter_args=(-f 2 -wi 3 -w 1s -i 10 -r 1s) ;;
+    paranoid) iter_args=(-f 3 -wi 5 -w 3s -i 10 -r 3s) ;;
 esac
 
 # --- build if needed ----------------------------------------------------------
@@ -269,7 +277,7 @@ if [[ $do_publish -eq 1 ]]; then
     if [[ ! -f "$out_dir/report.html" ]]; then
         warn "Nothing to publish: no report.html in $out_dir"
     else
-        [[ "$mode" == "thorough" ]] || warn "Publishing $mode numbers; --thorough is what the README claims"
+        [[ "$mode" == "thorough" || "$mode" == "paranoid" ]] || warn "Publishing $mode numbers; use --thorough for anything public"
         mkdir -p "$PAGES_DIR"
         touch "$PAGES_DIR/.nojekyll"
         cp "$out_dir/report.html" "$PAGES_DIR/index.html"

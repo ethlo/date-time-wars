@@ -42,7 +42,7 @@ missing.
 ./bench.sh                           # everything, normal mode (~10 min)
 ./bench.sh --quick --duration        # ~1 min smoke run of the duration suite
 ./bench.sh --lenient --format --gc   # lenient parsers + formatters, with allocation stats
-./bench.sh --thorough --all --async  # publishable numbers + flame graphs (~1h20m)
+./bench.sh --thorough --all --async  # publishable numbers + flame graphs (~16 min)
 ./bench.sh --list                    # which benchmarks exist
 ./bench.sh --help                    # every option
 ```
@@ -68,14 +68,25 @@ separate JMH fork.
 
 How long to run. Per-combo times are measured on the reference machine below.
 
-| Mode | JMH settings | Per combo | `--all` |
-|---|---|---|---|
-| `--quick` | 1 fork, 2×1s warmup, 3×1s measure | ~5s | ~3 min |
-| `--normal` (default) | 1 fork, 3×2s warmup, 5×2s measure | ~16s | ~10 min |
-| `--thorough` | 3 forks, 5×3s warmup, 10×3s measure | ~2m20s | ~1h 20m |
+| Mode | JMH settings | Per combo | `--all` | Median error |
+|---|---|---|---|---|
+| `--quick` | 1 fork, 2×1s warmup, 3×1s measure | ~5s | ~3 min | ±34% |
+| `--normal` (default) | 1 fork, 3×2s warmup, 5×2s measure | ~16s | ~10 min | ±7% |
+| `--thorough` | 2 forks, 3×1s warmup, 10×1s measure | ~26s | ~16 min | ±2% |
+| `--paranoid` | 3 forks, 5×3s warmup, 10×3s measure | ~2m20s | ~1h 20m | ±2% |
 
-Use `--quick` to sanity-check a change and `--thorough` for anything you intend to publish; `--quick` numbers
-are usually within a few percent but the error bars are wide enough to hide a small regression.
+Use `--quick` to sanity-check a change and `--thorough` for anything you intend to publish.
+
+The modes are tuned around how JMH reports error. It pools every measurement iteration across forks and
+reports `t(n-1, 0.9995) × s / √n` with `n = forks × iterations`, and that multiplier collapses as the
+iteration *count* grows - 18.2 at `n=3`, 3.9 at `n=5`, 1.5 at `n=10`. So many short iterations buy far
+tighter bounds than a few long ones. The candidates here have a median per-iteration CV of ~2.5%, which is
+why `--thorough` reaches ±2% at `n=20` and `--paranoid` spends 5× the wall time to barely improve on it.
+
+The error column is the median across the 36 `--all` benchmarks: measured for `--quick`, projected from the
+same per-iteration variance for the rest. `--quick`'s ±34% is almost entirely that multiplier rather than
+real noise - point estimates still reproduce to a median 4% across independent `--quick` runs. It is fine for spotting a large regression, useless for
+publishing a number, and it will not distinguish two candidates that are close.
 
 ### Profiling
 
