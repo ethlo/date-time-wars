@@ -9,6 +9,7 @@
     <version>1.0-SNAPSHOT</version>
 
     <properties>
+        <itu.version>1.16.0-SNAPSHOT</itu.version>
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -19,7 +20,7 @@
         <dependency>
             <groupId>com.ethlo.time</groupId>
             <artifactId>itu</artifactId>
-            <version>1.16.0-SNAPSHOT</version>
+            <version>${itu.version}</version>
         </dependency>
         <dependency>
             <groupId>com.google.http-client</groupId>
@@ -80,4 +81,32 @@
             </plugin>
         </plugins>
     </build>
+
+    <profiles>
+        <profile>
+            <!-- Build against a released ITU for a same-session baseline: mvn -Pitu-1.15 package, then
+                 bench.sh -n itu-1.15.0 'candidates\.itu\..*'. The candidates that need 1.16 APIs are left out. -->
+            <id>itu-1.15</id>
+            <properties>
+                <itu.version>1.15.0</itu.version>
+            </properties>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-compiler-plugin</artifactId>
+                        <configuration>
+                            <excludes>
+                                <exclude>candidates/itu_buffer/**</exclude>
+                                <exclude>candidates/itu_configurable/**</exclude>
+                                <exclude>candidates/itu_epoch/**</exclude>
+                                <exclude>candidates/itu_epoch_buffer/**</exclude>
+                                <exclude>throughput/**</exclude>
+                            </excludes>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 </project>
