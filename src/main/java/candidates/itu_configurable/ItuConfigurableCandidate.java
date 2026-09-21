@@ -1,7 +1,7 @@
 package candidates.itu_configurable;
 
 import static com.ethlo.time.DateTimeTokens.digits;
-import static com.ethlo.time.DateTimeTokens.fractions;
+import static com.ethlo.time.DateTimeTokens.optionalFractions;
 import static com.ethlo.time.DateTimeTokens.separators;
 import static com.ethlo.time.DateTimeTokens.zoneOffset;
 import static com.ethlo.time.Field.DAY;
@@ -19,9 +19,8 @@ import com.ethlo.time.token.ConfigurableDateTimeParser;
 import common.Rfc3339Parser;
 
 /**
- * ITU's configurable token based parser, set up for a fixed layout of
- * {@code yyyy-MM-ddTHH:mm:ss.fraction+offset}. The fraction is mandatory in this layout, so inputs without
- * one are not supported - see {@link ItuConfigurableParseBenchmark}.
+ * ITU's configurable token based parser, set up for the RFC-3339 layout
+ * {@code yyyy-MM-ddTHH:mm:ss[.fraction]+offset}, so it takes the same inputs as the fixed parser.
  */
 public class ItuConfigurableCandidate implements Rfc3339Parser
 {
@@ -37,8 +36,7 @@ public class ItuConfigurableCandidate implements Rfc3339Parser
             digits(MINUTE, 2),
             separators(':'),
             digits(SECOND, 2),
-            separators('.'),
-            fractions(),
+            optionalFractions('.'),
             zoneOffset()
     );
 
