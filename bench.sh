@@ -23,6 +23,9 @@ JAR="target/date-time-wars.jar"
 RESULTS_ROOT="results"
 PAGES_DIR="docs"
 PAGES_URL="https://ethlo.github.io/date-time-wars/"
+# Candidate libraries whose versions the report names; read from the shaded jar's
+# Maven metadata so run.properties says what actually ran, not what the pom says now.
+CANDIDATE_LIBS="itu google-http-client"
 
 # --- defaults -----------------------------------------------------------------
 suites=()
@@ -66,6 +69,7 @@ ${C_BOLD}Suites${C_RESET} (which benchmarks to run - combine freely, default is 
   --format          date-time formatters          (.*\\.format(Seconds|Millis|Nanos)\$)
   --datetime        the three above
   --duration        duration parse + format       (.*\\.(parse|format)Duration\$)
+  --floor           harness floor, no parsing     (.*\\.floor\$) - subtract from parse scores
   --all             everything
   <regex>           a raw JMH benchmark regex, e.g. 'itu.*parse'
 
@@ -111,7 +115,7 @@ EOF
 # --- arg parsing --------------------------------------------------------------
 while [[ $# -gt 0 ]]; do
     case "$1" in
-        --all|--parse|--lenient|--format|--datetime|--duration) suites+=("${1#--}") ;;
+        --all|--parse|--lenient|--format|--datetime|--duration|--floor) suites+=("${1#--}") ;;
         --quick|--normal|--thorough|--paranoid) mode="${1#--}" ;;
         --gc)          prof_gc=1 ;;
         --async)
@@ -147,6 +151,7 @@ for s in "${suites[@]}"; do
         format)   patterns+=('.*\.format(Seconds|Millis|Nanos)$') ;;
         datetime) patterns+=('.*\.parse$' '.*\.parseLenient$' '.*\.format(Seconds|Millis|Nanos)$') ;;
         duration) patterns+=('.*\.(parse|format)Duration$') ;;
+        floor)    patterns+=('.*\.floor$') ;;
         custom)   ;;
     esac
 done
@@ -256,12 +261,17 @@ ok "JMH finished in ${elapsed}s → $result_json"
     echo "java=$(java -version 2>&1 | head -n1)"
     echo "git=$(git rev-parse --short HEAD 2>/dev/null || echo unknown)$(git diff --quiet 2>/dev/null || echo '-dirty')"
     echo "elapsed_seconds=$elapsed"
+    for lib in $CANDIDATE_LIBS; do
+        v=$(unzip -p "$JAR" "META-INF/maven/*/$lib/pom.properties" 2>/dev/null | sed -n 's/^version=//p' | head -n1)
+        [[ -n "$v" ]] && echo "lib.$lib=$v"
+    done
 } > "$out_dir/run.properties"
 
 # --- report -------------------------------------------------------------------
 if [[ $no_report -eq 0 ]]; then
     report_args=("$result_json" -o "$out_dir")
     [[ -n "$baseline" ]] && report_args+=(--baseline "$baseline")
+    [[ $do_publish -eq 1 ]] && report_args+=(--pages-url "$PAGES_URL")
     python3 report.py "${report_args[@]}" || warn "Report generation failed; raw results are still in $out_dir"
 fi
 
@@ -281,7 +291,7 @@ if [[ $do_publish -eq 1 ]]; then
         mkdir -p "$PAGES_DIR"
         touch "$PAGES_DIR/.nojekyll"
         cp "$out_dir/report.html" "$PAGES_DIR/index.html"
-        for f in report.png summary.png summary.md; do
+        for f in report.png summary.png summary.md jmh-result-grouped.json; do
             [[ -f "$out_dir/$f" ]] && cp "$out_dir/$f" "$PAGES_DIR/$f"
         done
         git add "$PAGES_DIR" || warn "Could not stage $PAGES_DIR (not a git checkout?)"

@@ -27,29 +27,65 @@ import sys
 from collections import OrderedDict, defaultdict
 from datetime import datetime
 
-# --- candidate naming ---------------------------------------------------------
+REPO_URL = "https://github.com/ethlo/date-time-wars"
+
+# --- candidates ---------------------------------------------------------------
 # Benchmarks live in candidates.<id>.<Class>.<method>; <id> is the candidate key.
-# Add a pretty name here when the package name isn't good enough.
-LABELS = {
-    "itu": "ITU",
-    "itu_configurable": "ITU (configurable)",
-    "itu_clamped": "ITU (hours)",
-    "itu_duration": "ITU",  # legacy package name
-    "jdk": "JDK java.time",
-    "jdk_instant": "JDK Instant",
-    "google": "Google HTTP client",
-}
+# key -> (label, library key in LIBS, what the candidate actually calls). The
+# library's version comes from run.properties (`lib.<artifact>=`, written by
+# bench.sh from the shaded jar) so the report names what was measured, not what
+# the pom says today.
+CANDIDATES = OrderedDict([
+    ("itu", ("ITU", "itu",
+             "ITU.parseDateTime, parseLenient, isValid, formatUtc*, parseDuration and Duration.normalized()")),
+    ("itu_configurable", ("ITU (configurable)", "itu",
+                          "ConfigurableDateTimeParser with a token layout of yyyy-MM-ddTHH:mm:ss[.fff]+offset, "
+                          "the same inputs as the fixed parser")),
+    ("itu_buffer", ("ITU (char[] buffer)", "itu",
+                    "ITU.parseLenient over a char[] window into a reusable MutableDateTimeBuffer - the zero-allocation path")),
+    ("itu_clamped", ("ITU (hours)", "itu",
+                     "Duration.normalized(HOURS), so it decomposes a duration the way java.time.Duration.toString() does")),
+    ("itu_duration", ("ITU", "itu", "ITU.parseDuration and Duration.normalized()")),  # legacy package name
+    ("jdk", ("JDK java.time", "jdk",
+             "OffsetDateTime.parse, a DateTimeFormatterBuilder layout with optional parts for lenient parsing, "
+             "parse-and-catch for isValid, Duration.parse / toString")),
+    ("jdk_instant", ("JDK Instant", "jdk", "Instant.parse - the fastest built-in path for RFC-3339 input")),
+    ("google", ("Google HTTP client", "google-http-client", "DateTime.parseRfc3339ToSecondsAndNanos")),
+    ("epoch", ("Epoch millis", "jdk",
+               "Long.parseLong / Long.toString on the epoch count - the number an API would carry instead of "
+               "a date-time string. Not a parser; a reference for the “epoch is faster” argument")),
+    ("itu_epoch", ("ITU (epoch millis)", "itu",
+                   "ITU.parseEpochMilli on the same epoch-millis text, into the same DateTime the string parsers "
+                   "produce - the epoch argument measured to a temporal value, not to a long")),
+    ("itu_epoch_buffer", ("ITU (epoch millis, char[] buffer)", "itu",
+                          "ITU.parseEpochMilli over a char[] window into a reusable MutableDateTimeBuffer - the "
+                          "zero-allocation path for epoch text, the like-for-like of the char[] buffer row")),
+])
+# Reference rows are shown but never declared the winner of anything. The epoch rows parse a
+# different text than the date-time rows, so none of them can be "the fastest date-time parser".
+REFERENCE = {"epoch", "itu_epoch", "itu_epoch_buffer"}
+# library key -> (name, url, run.properties key for its version; None = the JDK)
+LIBS = OrderedDict([
+    ("itu", ("ITU - Internet Time Utility", "https://github.com/ethlo/itu", "lib.itu")),
+    ("jdk", ("JDK java.time", "https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/time/package-summary.html", None)),
+    ("google-http-client", ("Google HTTP client", "https://github.com/googleapis/google-http-java-client", "lib.google-http-client")),
+])
+LABELS = {k: v[0] for k, v in CANDIDATES.items()}
+# The harness floor lives outside candidates.* (see floor.HarnessFloorBenchmark);
+# it is reported as an environment fact, not as a section.
+FLOOR_METHOD = "floor"
 
 # Report sections: heading -> benchmark methods in display order. Methods not
 # listed here end up under "Other".
 SECTIONS = OrderedDict([
-    ("Date-time parsing", ["parse", "parseLenient"]),
+    ("Date-time parsing", ["parse", "parseLenient", "isValid"]),
     ("Date-time formatting", ["formatSeconds", "formatMillis", "formatNanos"]),
     ("Duration", ["parseDuration", "formatDuration"]),
 ])
 METHOD_DESC = {
     "parse": "strict RFC-3339 / ISO-8601 date-time",
     "parseLenient": "lenient date-time (optional fields)",
+    "isValid": "strict RFC-3339 validity check, valid and invalid inputs",
     "formatSeconds": "format UTC, second resolution",
     "formatMillis": "format UTC, millisecond resolution",
     "formatNanos": "format UTC, nanosecond resolution",
@@ -132,6 +168,11 @@ def scenario_title(method, params):
     return "%s(%s)" % (method, ", ".join('"%s"' % v for _, v in params))
 
 
+def input_label(params):
+    """The @Param values alone, for rows under a heading that already names the method."""
+    return ", ".join(v for _, v in params) if params else "–"
+
+
 def group(results):
     """-> OrderedDict method -> OrderedDict scenario_key -> [Result sorted fastest first]"""
     by_method = OrderedDict()
@@ -186,7 +227,7 @@ def read_properties(path):
     return props
 
 
-def environment(results, props):
+def environment(results, props, floor=None):
     e = results[0].entry
     env = OrderedDict()
     env["Date"] = props.get("date", datetime.now().isoformat(timespec="seconds"))
@@ -194,13 +235,35 @@ def environment(results, props):
         env["Run"] = props["label"]
     env["JDK"] = "%s (%s %s)" % (e.get("jdkVersion", "?"), e.get("vmName", ""), e.get("vmVersion", ""))
     env["JVM args"] = " ".join(e.get("jvmArgs", [])) or "-"
-    env["Iterations"] = "%s fork(s), %s × %s warmup, %s × %s measurement" % (
+    mode = (" (--%s)" % props["mode"]) if props.get("mode") else ""
+    env["Iterations"] = "%s fork(s), %s × %s warmup, %s × %s measurement%s" % (
         e.get("forks"), e.get("warmupIterations"), e.get("warmupTime"),
-        e.get("measurementIterations"), e.get("measurementTime"))
+        e.get("measurementIterations"), e.get("measurementTime"), mode)
     for k, name in (("cpu", "CPU"), ("os", "OS"), ("git", "Git")):
         if props.get(k):
             env[name] = props[k]
+    if floor:
+        env["Harness floor"] = "%s %s - the JMH loop, state loads and Blackhole with no parsing at all; " \
+                               "subtract it from a parse score for the parser's own cost" % (
+                                   _fmt_span([r.score for r in floor], 2), floor[0].unit)
     return env
+
+
+def lib_versions(results, props):
+    """-> OrderedDict library key -> version string, or None when the run did not record it."""
+    out = OrderedDict()
+    for key, (_, _, prop) in LIBS.items():
+        if prop is None:
+            out[key] = results[0].entry.get("jdkVersion")
+        else:
+            out[key] = props.get(prop)
+    return out
+
+
+def split_floor(results):
+    """Separate the harness floor rows from the candidates."""
+    floor = [r for r in results if r.method == FLOOR_METHOD]
+    return [r for r in results if r.method != FLOOR_METHOD], floor
 
 
 # --- terminal -----------------------------------------------------------------
@@ -297,8 +360,12 @@ def bar_path(x, y, w, h, r=4):
             .format(x=x, y=y, w1=w - r, r=r, h1=h - 2 * r))
 
 
-def svg_chart(method, scenarios, slots, unit, cid):
-    """One grouped horizontal bar chart per method: a row per scenario, a bar per candidate."""
+def svg_chart(method, scenarios, slots, unit, cid, row_label=None):
+    """One grouped horizontal bar chart per method: a row per scenario, a bar per candidate.
+
+    row_label maps a scenario key to its row text; by default the input alone, since the
+    method is the chart's heading."""
+    row_label = row_label or (lambda m, p: input_label(p))
     candidates = OrderedDict()
     for rs in scenarios.values():
         for r in rs:
@@ -307,8 +374,9 @@ def svg_chart(method, scenarios, slots, unit, cid):
 
     max_score = max(r.score + r.error for rs in scenarios.values() for r in rs)
     bar_h, gap, group_pad = 18, 2, 18
-    label_w = 40 + 7 * max(len(scenario_title(m, p)) for (m, p) in scenarios)
-    label_w = min(label_w, 360)
+    # the method is the chart's heading, so rows are labelled by input alone
+    label_w = 24 + 7 * max(len(row_label(m, p)) for (m, p) in scenarios)
+    label_w = min(label_w, 300)
     width = 960
     plot_w = width - label_w - 90
     row_h = len(cand_order) * (bar_h + gap) + group_pad
@@ -341,7 +409,7 @@ def svg_chart(method, scenarios, slots, unit, cid):
         best = rs[0]
         title = scenario_title(m, params)
         out.append('<text class="rowlabel" x="%d" y="%.1f" text-anchor="end">%s</text>'
-                   % (label_w - 10, y + (len(cand_order) * (bar_h + gap)) / 2 + 4, html.escape(title)))
+                   % (label_w - 10, y + (len(cand_order) * (bar_h + gap)) / 2 + 4, html.escape(row_label(m, params))))
         for c in cand_order:
             r = by_cand.get(c)
             if r is None:
@@ -384,131 +452,314 @@ HTML_HEAD = """<!doctype html>
   color-scheme: light;
   --page:#f9f9f7; --surface:#fcfcfb; --ink:#0b0b0b; --ink2:#52514e; --muted:#898781;
   --grid:#e1e0d9; --axis:#c3c2b7; --border:rgba(11,11,11,.10); --good:#006300; --bad:#b32d2d;
+  --link:#1d5fb4; --best:rgba(42,120,214,.08);
   {light_slots}
 }}
 @media (prefers-color-scheme: dark) {{ :root:not([data-theme="light"]) {{
   color-scheme: dark;
   --page:#0d0d0d; --surface:#1a1a19; --ink:#fff; --ink2:#c3c2b7; --muted:#898781;
   --grid:#2c2c2a; --axis:#383835; --border:rgba(255,255,255,.10); --good:#0ca30c; --bad:#e66767;
+  --link:#6ea6f0; --best:rgba(57,135,229,.14);
   {dark_slots}
 }} }}
 :root[data-theme="dark"] {{
   color-scheme: dark;
   --page:#0d0d0d; --surface:#1a1a19; --ink:#fff; --ink2:#c3c2b7; --muted:#898781;
   --grid:#2c2c2a; --axis:#383835; --border:rgba(255,255,255,.10); --good:#0ca30c; --bad:#e66767;
+  --link:#6ea6f0; --best:rgba(57,135,229,.14);
   {dark_slots}
 }}
 * {{ box-sizing:border-box }}
+html {{ scroll-behavior:smooth }}
 body {{ margin:0; padding:24px 16px 48px; background:var(--page); color:var(--ink);
   font:14px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif }}
 main {{ max-width:1040px; margin:0 auto }}
+a {{ color:var(--link); text-decoration:none }} a:hover {{ text-decoration:underline }}
 h1 {{ font-size:26px; margin:0 0 4px }}
-h2 {{ font-size:18px; margin:40px 0 8px; padding-bottom:6px; border-bottom:1px solid var(--grid) }}
-h3.method {{ font-size:16px; margin:22px 0 8px }}
-h3.method span {{ font-size:13px; font-weight:400; color:var(--ink2); margin-left:8px }}
-h4 {{ font-size:13px; margin:18px 0 4px; color:var(--ink2); font-weight:600 }}
-.sub {{ color:var(--ink2); margin:0 0 18px }}
-.env {{ display:grid; grid-template-columns:max-content 1fr; gap:2px 14px; font-size:13px; color:var(--ink2);
+h2 {{ font-size:18px; margin:44px 0 8px; padding-bottom:6px; border-bottom:1px solid var(--grid) }}
+h3.method {{ font-size:16px; margin:26px 0 8px }}
+h3.method > span:last-child {{ font-size:13px; font-weight:400; color:var(--ink2); margin-left:8px }}
+code, .mono {{ font-family:ui-monospace,SFMono-Regular,Menlo,monospace; font-size:.93em }}
+.sub {{ color:var(--ink2); margin:0 0 10px }}
+.sub b {{ color:var(--ink); font-weight:600 }}
+nav {{ display:flex; flex-wrap:wrap; gap:4px 18px; font-size:13px; margin:0 0 8px; padding:8px 0; border-top:1px solid var(--grid); border-bottom:1px solid var(--grid) }}
+.lead {{ color:var(--ink2); margin:0 0 14px; max-width:72ch }}
+.env {{ display:grid; grid-template-columns:max-content 1fr; gap:3px 14px; font-size:13px; color:var(--ink2);
   background:var(--surface); border:1px solid var(--border); border-radius:8px; padding:12px 16px; margin:0 0 8px }}
 .env b {{ color:var(--ink); font-weight:600 }}
-.tiles {{ display:flex; flex-wrap:wrap; gap:12px; margin:18px 0 8px }}
-.tile {{ flex:1 1 200px; background:var(--surface); border:1px solid var(--border); border-radius:8px; padding:12px 16px }}
-.tile .label {{ font-size:12px; color:var(--ink2) }}
-.tile .value {{ font-size:28px; font-weight:600; line-height:1.2 }}
-.tile .value small {{ font-size:13px; font-weight:400; color:var(--ink2) }}
-.tile .who {{ font-size:13px; color:var(--ink2) }}
-.tile .who i {{ display:inline-block; width:10px; height:10px; border-radius:2px; margin-right:6px; vertical-align:-1px }}
 .card {{ background:var(--surface); border:1px solid var(--border); border-radius:8px; padding:12px 16px 8px; overflow-x:auto }}
 .legend {{ display:flex; flex-wrap:wrap; gap:6px 18px; margin:0 0 6px; font-size:13px; color:var(--ink2) }}
-.legend i {{ display:inline-block; width:12px; height:12px; border-radius:3px; margin-right:6px; vertical-align:-1px }}
+.legend i, i.sw {{ display:inline-block; width:12px; height:12px; border-radius:3px; margin-right:6px; vertical-align:-1px }}
 svg.chart {{ display:block; min-width:640px }}
 svg .grid {{ stroke:var(--grid); stroke-width:1 }}
 svg .axis {{ stroke:var(--axis); stroke-width:1 }}
+svg .parity {{ stroke:var(--ink2); stroke-width:1; stroke-dasharray:3 3 }}
 svg .tick {{ fill:var(--muted); font-size:11px; font-variant-numeric:tabular-nums }}
 svg .rowlabel {{ fill:var(--ink2); font-size:12px; font-family:ui-monospace,SFMono-Regular,Menlo,monospace }}
 svg .val {{ fill:var(--ink2); font-size:11px; font-variant-numeric:tabular-nums }}
 svg .err line {{ stroke:var(--ink2); stroke-width:1; opacity:.7 }}
+svg .range {{ stroke-width:3; stroke-linecap:round; opacity:.45 }}
+svg .dot {{ stroke:var(--surface); stroke-width:2 }}
 svg .hit {{ fill:transparent }}
-svg .bar:hover path {{ filter:brightness(1.12) }}
+svg .bar:hover path, svg .bar:hover circle {{ filter:brightness(1.12) }}
 svg .bar:hover .val {{ fill:var(--ink); font-weight:600 }}
 #tip {{ position:fixed; pointer-events:none; display:none; background:var(--ink); color:var(--page);
   padding:6px 10px; border-radius:6px; font-size:12px; max-width:420px; z-index:9 }}
-table {{ border-collapse:collapse; width:100%; font-size:13px; margin:4px 0 12px }}
-th, td {{ padding:5px 10px; text-align:right; border-bottom:1px solid var(--grid); font-variant-numeric:tabular-nums }}
-th {{ color:var(--ink2); font-weight:600 }}
-th:nth-child(2), td:nth-child(2) {{ text-align:left }}
-td i.sw {{ display:inline-block; width:10px; height:10px; border-radius:2px; margin-right:8px; vertical-align:-1px }}
-tr.best td {{ font-weight:600 }}
+.tw {{ overflow-x:auto; margin:4px 0 12px }}
+table {{ border-collapse:collapse; width:100%; font-size:13px }}
+table.pivot {{ width:auto; min-width:60% }}
+table.pivot td:not(.l) {{ min-width:8em }}
+th, td {{ padding:6px 10px; text-align:right; border-bottom:1px solid var(--grid); font-variant-numeric:tabular-nums; vertical-align:top }}
+th {{ color:var(--ink2); font-weight:600; white-space:nowrap }}
+th.l, td.l {{ text-align:left }}
+td.l {{ white-space:nowrap }}
+td.wrap {{ white-space:normal; text-align:left; color:var(--ink2); min-width:26ch }}
+tr.sec td {{ text-align:left; font-weight:600; color:var(--ink2); background:var(--surface); padding-top:10px; font-size:12px; text-transform:uppercase; letter-spacing:.04em }}
+td.best {{ background:var(--best); font-weight:600 }}
+td small {{ color:var(--muted); font-weight:400; font-size:11px }}
+td .rel {{ display:block; color:var(--muted); font-weight:400; font-size:11px }}
+td.na {{ color:var(--muted) }}
+.pill {{ display:inline-block; font-size:10px; font-weight:600; text-transform:uppercase; letter-spacing:.04em; color:var(--ink2);
+  border:1px solid var(--border); border-radius:10px; padding:0 7px; margin-left:6px; vertical-align:1px }}
 .good {{ color:var(--good) }} .bad {{ color:var(--bad) }}
-details {{ margin:8px 0 }} summary {{ cursor:pointer; color:var(--ink2); font-size:13px }}
-footer {{ margin-top:40px; color:var(--muted); font-size:12px }}
+.speedup {{ font-weight:600; white-space:nowrap }}
+.note {{ font-size:12px; color:var(--muted); margin:6px 0 0 }}
+footer {{ margin-top:40px; color:var(--muted); font-size:12px; display:flex; flex-wrap:wrap; gap:4px 18px }}
 </style></head><body><main>
 """
 
 
-def write_html(path, by_method, env, slots, baseline, title, all_results):
+def _slug(text):
+    return "".join(c if c.isalnum() else "-" for c in text.lower()).strip("-")
+
+
+def _swatch(slots, label):
+    return '<i class="sw" style="background:var(--s%d)"></i>' % (slots[label] % len(PALETTE_LIGHT))
+
+
+def _fastest(scenarios):
+    """The candidate that wins most inputs, references excluded -> label or None."""
+    wins = defaultdict(int)
+    for rs in scenarios.values():
+        for r in rs:
+            if r.candidate not in REFERENCE:
+                wins[r.label] += 1
+                break
+    return max(wins, key=wins.get) if wins else None
+
+
+def svg_speedup(rows, slots):
+    """Summary chart: per method, the ITU-vs-JDK speed-up span across inputs on a log axis.
+
+    A range with a dot at the geometric mean rather than a bar, because a bar's length means
+    nothing on a log scale and the spread across inputs is the honest part of the number."""
+    row_h, top, bottom = 26, 28, 30
+    label_w, width = 130, 960
+    plot_w = width - label_w - 110
+    height = top + row_h * len(rows) + bottom
+    lo = min(min(sp) for *_, sp in rows)
+    hi = max(max(sp) for *_, sp in rows)
+    xmin, xmax = min(0.5, lo / 1.3), hi * 1.6
+    ticks = [t for t in (0.1, 0.2, 0.5, 1, 2, 5, 10, 20, 50, 100, 200, 500, 1000, 2000, 5000) if xmin <= t <= xmax]
+
+    def sx(v):
+        return label_w + (math.log10(v) - math.log10(xmin)) / (math.log10(xmax) - math.log10(xmin)) * plot_w
+
+    out = ['<svg class="chart" viewBox="0 0 %d %d" width="100%%" role="img" aria-labelledby="sp-t">' % (width, height),
+           '<title id="sp-t">%s speed-up over %s per operation, log scale</title>' % (SUMMARY_SUBJECT, SUMMARY_BASELINE)]
+    for t in ticks:
+        x = sx(t)
+        cls = "parity" if t == 1 else "grid"
+        out.append('<line class="%s" x1="%.1f" y1="%d" x2="%.1f" y2="%d"/>' % (cls, x, top - 8, x, height - bottom + 6))
+        out.append('<text class="tick" x="%.1f" y="%d" text-anchor="middle">%s</text>'
+                   % (x, height - bottom + 20, "parity" if t == 1 else fmt_num(t, 1 if t < 1 else 0) + "×"))
+    out.append('<text class="tick" x="%d" y="%d" text-anchor="end">× faster than %s, log scale</text>'
+               % (width - 4, 14, html.escape(SUMMARY_BASELINE)))
+    color = "var(--s%d)" % (slots.get(SUMMARY_SUBJECT, 0) % len(PALETTE_LIGHT))
+    for i, (method, unit, subj, base, sp) in enumerate(rows):
+        y = top + i * row_h + row_h / 2
+        gm = _geomean(sp)
+        tip = "%s: %s %s vs %s %s %s - %s× (geometric mean %s× over %d input%s)" % (
+            method, SUMMARY_SUBJECT, _fmt_span(subj), SUMMARY_BASELINE, _fmt_span(base), unit,
+            _fmt_speedup(sp), fmt_num(gm, 0 if gm >= 10 else 1), len(sp), "" if len(sp) == 1 else "s")
+        out.append('<g class="bar" data-tip="%s">' % html.escape(tip, quote=True))
+        out.append('<rect class="hit" x="0" y="%.1f" width="%d" height="%d"/>' % (y - row_h / 2, width, row_h))
+        out.append('<text class="rowlabel" x="%d" y="%.1f" text-anchor="end">%s</text>' % (label_w - 12, y + 4, html.escape(method)))
+        out.append('<line class="range" x1="%.1f" y1="%.1f" x2="%.1f" y2="%.1f" stroke="%s"/>'
+                   % (sx(min(sp)), y, sx(max(sp)), y, color))
+        out.append('<circle class="dot" cx="%.1f" cy="%.1f" r="5" fill="%s"/>' % (sx(gm), y, color))
+        out.append('<text class="val" x="%.1f" y="%.1f">%s×</text>' % (sx(max(sp)) + 10, y + 4, _fmt_speedup(sp)))
+        out.append('</g>')
+    out.append('<line class="axis" x1="%d" y1="%d" x2="%d" y2="%d"/>' % (label_w, top - 8, label_w, height - bottom + 6))
+    out.append('</svg>')
+    return "\n".join(out)
+
+
+def _cell(r, best, baseline, has_alloc):
+    if r is None:
+        return '<td class="na">–</td>'
+    cls = ' class="best"' if r is best else ""
+    body = '%s <small>±%s</small>' % (fmt_num(r.score), fmt_num(r.error, 1))
+    body += '<span class="rel">%s</span>' % ("fastest" if r is best else "%.2f×" % rel(r, best))
+    if has_alloc:
+        body += '<span class="rel">%s B/op</span>' % fmt_num(r.alloc, 0)
+    if baseline:
+        d = delta(r, baseline)
+        if d is None:
+            body += '<span class="rel">new</span>'
+        else:
+            c = "good" if d < -1 else ("bad" if d > 1 else "")
+            body += '<span class="rel %s">%s vs baseline</span>' % (c, fmt_delta(d))
+    return "<td%s>%s</td>" % (cls, body)
+
+
+def pivot_table(scenarios, slots, baseline, has_alloc, row_label=None, row_head="Input"):
+    """One table per method: a row per input, a column per candidate, so it mirrors the chart."""
+    show_input = any(p for (_, p) in scenarios) or row_label is not None
+    row_label = row_label or (lambda m, p: input_label(p))
+    cand_order = sorted({r.label for rs in scenarios.values() for r in rs}, key=slots.get)
+    p = ['<div class="tw"><table class="pivot"><tr>']
+    if show_input:
+        p.append('<th class="l">%s</th>' % html.escape(row_head))
+    for c in cand_order:
+        p.append('<th>%s%s</th>' % (_swatch(slots, c), html.escape(c)))
+    p.append('</tr>')
+    for (m, params), rs in scenarios.items():
+        by_cand = {r.label: r for r in rs}
+        p.append('<tr>')
+        if show_input:
+            p.append('<td class="l mono">%s</td>' % html.escape(row_label(m, params)))
+        for c in cand_order:
+            p.append(_cell(by_cand.get(c), rs[0], baseline, has_alloc))
+        p.append('</tr>')
+    p.append('</table></div>')
+    return "".join(p)
+
+
+def write_html(path, by_method, env, slots, baseline, title, all_results, versions, pages_url=None):
     light = " ".join("--s%d:%s;" % (i, c) for i, c in enumerate(PALETTE_LIGHT))
     dark = " ".join("--s%d:%s;" % (i, c) for i, c in enumerate(PALETTE_DARK))
     has_alloc = any(r.alloc is not None for r in all_results)
+    e = all_results[0].entry
+    sections = by_section(by_method)
     p = [HTML_HEAD.format(title=html.escape(title), light_slots=light, dark_slots=dark)]
+
+    # --- header
     p.append("<h1>%s</h1>" % html.escape(title))
-    p.append('<p class="sub">%d benchmarks · %d candidates · average time per operation, lower is better</p>'
-             % (len(all_results), len(slots)))
-    p.append('<div class="env">' + "".join("<b>%s</b><span>%s</span>" % (html.escape(k), html.escape(v))
-                                           for k, v in env.items()) + "</div>")
+    facts = ["%d benchmarks" % len(all_results), "%d candidates" % len(slots),
+             "<b>%s</b>, lower is better" % html.escape(all_results[0].unit)]
+    for k in ("JDK", "CPU"):
+        if k in env:
+            facts.append(html.escape(env[k].split(" (")[0]))
+    facts.append(html.escape(env["Date"][:10]))
+    p.append('<p class="sub">%s</p>' % " · ".join(facts))
+    nav = [("summary", "Summary"), ("candidates", "Candidates")] + \
+          [(_slug(s), s) for s in sections] + [("environment", "Environment")]
+    p.append("<nav>%s</nav>" % "".join('<a href="#%s">%s</a>' % (i, html.escape(n)) for i, n in nav))
 
-    # headline tiles: fastest candidate per method and how far ahead it is
-    p.append('<div class="tiles">')
-    for method, scenarios in by_method.items():
-        wins = defaultdict(int)
-        ratios = []
-        for rs in scenarios.values():
-            wins[rs[0].label] += 1
-            if len(rs) > 1:
-                ratios.append(rs[-1].score / rs[0].score)
-        winner = max(wins, key=wins.get)
-        label = winner
-        speed = ("%.1f×" % (sum(ratios) / len(ratios))) if ratios else "-"
-        p.append('<div class="tile"><div class="label">%s · fastest</div>'
-                 '<div class="who"><i style="background:var(--s%d)"></i>%s</div>'
-                 '<div class="value">%s <small>faster than slowest, avg</small></div></div>'
-                 % (html.escape(method), slots[winner] % len(PALETTE_LIGHT), html.escape(label), speed))
-    p.append('</div>')
+    # --- summary: one row per method, ITU against the JDK
+    rows = summary_rows(by_method)
+    p.append('<h2 id="summary">Summary</h2>')
+    if rows:
+        p.append('<p class="lead">%s against %s, one row per operation. Spans cover the inputs of that '
+                 'operation; the speed-up is %s time divided by %s time, per input. The other candidates '
+                 'are in the sections below.</p>'
+                 % tuple(html.escape(x) for x in (SUMMARY_SUBJECT, SUMMARY_BASELINE, SUMMARY_BASELINE, SUMMARY_SUBJECT)))
+        p.append('<div class="card">%s</div>' % svg_speedup(rows, slots))
+        by_m = {m: (u, s, b, sp) for m, u, s, b, sp in rows}
+        p.append('<div class="tw"><table><tr><th class="l">Operation</th><th class="l">What</th><th>Inputs</th>'
+                 '<th>%s</th><th>%s</th><th>Speed-up</th><th class="l">Fastest overall</th></tr>'
+                 % (html.escape(SUMMARY_SUBJECT), html.escape(SUMMARY_BASELINE)))
+        for section, methods in sections.items():
+            in_section = [m for m in methods if m in by_m]
+            if not in_section:
+                continue
+            p.append('<tr class="sec"><td colspan="7">%s</td></tr>' % html.escape(section))
+            for m in in_section:
+                unit, subj, base, sp = by_m[m]
+                fastest = _fastest(methods[m])
+                p.append('<tr><td class="l"><a href="#m-%s" class="mono">%s</a></td><td class="wrap">%s</td>'
+                         '<td>%d</td><td>%s</td><td>%s</td><td class="speedup">%s×</td><td class="l">%s</td></tr>'
+                         % (_slug(m), html.escape(m), html.escape(METHOD_DESC.get(m, "")), len(sp),
+                            _fmt_span(subj), _fmt_span(base), _fmt_speedup(sp),
+                            (_swatch(slots, fastest) + html.escape(fastest)) if fastest else "–"))
+        p.append('</table></div>')
+        p.append('<p class="note">Times in %s. “Fastest overall” counts every candidate except the '
+                 'reference rows, which are not date-time parsers.</p>' % html.escape(all_results[0].unit))
+    else:
+        p.append('<p class="lead">No %s vs %s pairs in this run.</p>' % (SUMMARY_SUBJECT, SUMMARY_BASELINE))
 
+    # --- candidates: what each row of the charts actually is, with library and version
+    p.append('<h2 id="candidates">Candidates</h2>')
+    p.append('<div class="tw"><table><tr><th class="l">Candidate</th><th class="l">Library</th>'
+             '<th class="l">Version</th><th class="l">Under test</th></tr>')
+    present = {r.candidate for r in all_results}
+    seen = set()
+    for key, (label, lib, what) in CANDIDATES.items():
+        if key not in present or label in seen:
+            continue
+        seen.add(label)
+        name, url, _ = LIBS.get(lib, (lib, None, None))
+        version = versions.get(lib)
+        pill = '<span class="pill">reference</span>' if key in REFERENCE else ""
+        p.append('<tr><td class="l">%s%s%s</td><td class="l">%s</td><td class="l mono">%s</td><td class="wrap">%s</td></tr>'
+                 % (_swatch(slots, label), html.escape(label), pill,
+                    ('<a href="%s">%s</a>' % (html.escape(url, quote=True), html.escape(name))) if url else html.escape(name),
+                    html.escape(version) if version else '<span class="pill">not recorded</span>',
+                    html.escape(what)))
+    for label in sorted({r.label for r in all_results if r.candidate not in CANDIDATES}):
+        p.append('<tr><td class="l">%s%s</td><td class="l">–</td><td class="l">–</td><td class="wrap">–</td></tr>'
+                 % (_swatch(slots, label), html.escape(label)))
+    p.append('</table></div>')
+
+    # --- detail sections: a chart and a pivot table per method
     i = 0
-    for section, methods in by_section(by_method).items():
-        p.append("<h2>%s</h2>" % html.escape(section))
+    for section, methods in sections.items():
+        p.append('<h2 id="%s">%s</h2>' % (_slug(section), html.escape(section)))
+        # Methods with a single, parameterless input (the formatters) share one chart and
+        # one table with a row per method, instead of a chart each for one number.
+        if len(methods) > 1 and all(len(sc) == 1 and not next(iter(sc))[1] for sc in methods.values()):
+            i += 1
+            merged = OrderedDict((k, rs) for sc in methods.values() for k, rs in sc.items())
+            unit = next(iter(merged.values()))[0].unit
+            p.append('<h3 class="method">%s <span>one operation per row</span></h3>'
+                     % " \u00b7 ".join('<span id="m-%s">%s</span>' % (_slug(m), html.escape(m)) for m in methods))
+            by_method_label = lambda m, _p: m
+            p.append('<div class="card">%s</div>' % svg_chart(section, merged, slots, unit, "c%d" % i, by_method_label))
+            p.append(pivot_table(merged, slots, baseline, has_alloc, by_method_label, "Operation"))
+            continue
         for method, scenarios in methods.items():
             i += 1
             unit = next(iter(scenarios.values()))[0].unit
-            p.append('<h3 class="method">%s <span>%s</span></h3>'
-                     % (html.escape(method), html.escape(METHOD_DESC.get(method, ""))))
+            p.append('<h3 class="method" id="m-%s">%s <span>%s</span></h3>'
+                     % (_slug(method), html.escape(method), html.escape(METHOD_DESC.get(method, ""))))
             p.append('<div class="card">%s</div>' % svg_chart(method, scenarios, slots, unit, "c%d" % i))
-            for (m, params), rs in scenarios.items():
-                best = rs[0]
-                p.append("<h4><code>%s</code></h4>" % html.escape(scenario_title(m, params)))
-                hdr = "<tr><th>#</th><th>Candidate</th><th>%s</th><th>± error</th><th>rel</th>" % unit
-                if has_alloc:
-                    hdr += "<th>B/op</th>"
-                if baseline:
-                    hdr += "<th>vs baseline</th>"
-                p.append("<table>" + hdr + "</tr>")
-                for j, r in enumerate(rs, 1):
-                    row = ('<tr%s><td>%d</td><td><i class="sw" style="background:var(--s%d)"></i>%s</td>'
-                           '<td>%s</td><td>%s</td><td>%.2f×</td>'
-                           % (' class="best"' if j == 1 else "", j, slots[r.label] % len(PALETTE_LIGHT),
-                              html.escape(r.label), fmt_num(r.score), fmt_num(r.error, 1), rel(r, best)))
-                    if has_alloc:
-                        row += "<td>%s</td>" % fmt_num(r.alloc, 0)
-                    if baseline:
-                        d = delta(r, baseline)
-                        cls = "" if d is None else ("good" if d < -1 else ("bad" if d > 1 else ""))
-                        row += '<td class="%s">%s</td>' % (cls, "new" if d is None else fmt_delta(d))
-                    p.append(row + "</tr>")
-                p.append("</table>")
+            p.append(pivot_table(scenarios, slots, baseline, has_alloc))
+    p.append('<p class="note">%s per operation; ± is JMH’s 99.9%% confidence interval over all measurement '
+             'iterations. The small figure under each value is the ratio to the fastest candidate on that input.</p>'
+             % html.escape(all_results[0].unit))
 
-    p.append('<footer>Generated %s by report.py · JMH %s</footer>' % (
-        datetime.now().strftime("%Y-%m-%d %H:%M"), html.escape(all_results[0].entry.get("jmhVersion", ""))))
+    # --- environment
+    p.append('<h2 id="environment">Environment</h2>')
+    p.append('<div class="env">')
+    for k, v in env.items():
+        if k == "Git":
+            sha, dirty = (v[:-6], True) if v.endswith("-dirty") else (v, False)
+            v = '<a href="%s/commit/%s">%s</a>%s' % (REPO_URL, html.escape(sha), html.escape(sha),
+                                                   " (with uncommitted changes)" if dirty else "")
+        else:
+            v = html.escape(v)
+        p.append("<b>%s</b><span>%s</span>" % (html.escape(k), v))
+    p.append("</div>")
+    p.append('<p class="note">JMH %s. Each run records this in <code>run.properties</code> next to its results; '
+             'library versions are read from the jar that ran, not from the pom.</p>' % html.escape(e.get("jmhVersion", "")))
+
+    links = ['Generated %s by <a href="%s">report.py</a>' % (datetime.now().strftime("%Y-%m-%d %H:%M"), REPO_URL),
+             '<a href="jmh-result-grouped.json">raw JMH results</a>']
+    if pages_url:
+        links.append('<a href="https://jmh.morethan.io/?source=%sjmh-result-grouped.json">open in JMH Visualizer</a>'
+                     % html.escape(pages_url.rstrip("/") + "/", quote=True))
+    p.append('<footer>%s</footer>' % " · ".join(links))
     p.append('<div id="tip"></div>')
     p.append("""<script>
 (function(){var t=document.getElementById('tip');
@@ -701,24 +952,27 @@ def main(argv=None):
     ap.add_argument("--summary-url", default="https://ethlo.github.io/date-time-wars/",
                     help="link target appended to summary.md")
     ap.add_argument("--readme", help="splice the summary table into this README's BENCH:START/END block")
+    ap.add_argument("--pages-url", help="where report.html will be published; adds a JMH Visualizer link")
     ap.add_argument("-q", "--quiet", action="store_true", help="don't print the summary")
     args = ap.parse_args(argv)
 
-    results = load(args.input)
+    results, floor = split_floor(load(args.input))
     if not results:
-        sys.exit("No results in %s" % args.input)
+        sys.exit("No candidate results in %s" % args.input)
     out_dir = args.out or os.path.dirname(os.path.abspath(args.input))
     os.makedirs(out_dir, exist_ok=True)
     props = read_properties(os.path.join(out_dir, "run.properties"))
-    env = environment(results, props)
+    env = environment(results, props, floor)
+    versions = lib_versions(results, props)
     by_method = group(results)
     slots = candidate_slots(results)
     baseline = {r.key: r for r in load(args.baseline)} if args.baseline else None
     title = args.title or ("date-time-wars" + (" · " + props["label"] if props.get("label") else ""))
 
     write_markdown(os.path.join(out_dir, "report.md"), by_method, env, baseline, title)
-    write_html(os.path.join(out_dir, "report.html"), by_method, env, slots, baseline, title, results)
-    write_grouped(os.path.join(out_dir, "jmh-result-grouped.json"), results)
+    write_html(os.path.join(out_dir, "report.html"), by_method, env, slots, baseline, title, results,
+               versions, args.pages_url)
+    write_grouped(os.path.join(out_dir, "jmh-result-grouped.json"), results + floor)
     png = False if args.no_png else write_png(os.path.join(out_dir, "report.png"), by_method, slots, title)
 
     rows = summary_rows(by_method)

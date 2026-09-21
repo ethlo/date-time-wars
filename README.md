@@ -7,7 +7,7 @@
 ## Candidates
 
 * ITU - Internet Time Utility - https://github.com/ethlo/itu (`ITU.parseDateTime`, `ITU.parseLenient`, `ITU.formatUtc*`, `ITU.parseDuration`)
-* ITU configurable - `ConfigurableDateTimeParser` with an explicit token layout (`yyyy-MM-ddTHH:mm:ss.fff+offset`)
+* ITU configurable - `ConfigurableDateTimeParser` with an explicit token layout (`yyyy-MM-ddTHH:mm:ss[.fff]+offset`)
 * ITU (hours) - ITU duration formatting clamped to hours via `normalized(DurationUnit.HOURS)`, so it
   decomposes a duration the same way `java.time.Duration.toString()` does. ITU's default `normalized()`
   renders with the largest units available and emits weeks and days, which the JDK never does, so the two
@@ -15,15 +15,23 @@
 * Standard JDK - [java.time.OffsetDateTime](https://docs.oracle.com/javase/8/docs/api/java/time/OffsetDateTime.html),
   a `DateTimeFormatterBuilder` layout with optional parts for lenient parsing, and `java.time.Duration`
 * JDK `Instant.parse` - the fastest built-in JDK path for RFC-3339 input
+* Epoch - not a date-time parser at all: `Long.parseLong` on epoch milliseconds and `Long.toString` on the
+  epoch count, the number an API or file would carry *instead of* a date-time string. It sits in the
+  `parseLenient` and `format*` rows so "epoch is faster to parse" can be checked against the string parsers
+  directly. The parse row returns a primitive `long`, so it is the allocation-free floor of that choice
+* ITU (epoch millis) - the same epoch-millis text parsed with `ITU.parseEpochMilli` into the same `DateTime`
+  the string parsers produce, and a `char[]` buffer variant to set against the char[] buffer row. This is
+  the epoch argument measured to a temporal value rather than to a `long`; the Epoch row is the floor
+  beneath it
 * Google HTTP client - [com.google.api.client.util.DateTime](https://github.com/googleapis/google-http-java-client/blob/main/google-http-client/src/main/java/com/google/api/client/util/DateTime.java)
 
 ## Benchmarks
 
 | Method | What | Candidates |
 |---|---|---|
-| `parse` | strict RFC-3339 date-time → `OffsetDateTime` | ITU, ITU configurable (fractional inputs only), JDK, JDK Instant, Google |
-| `parseLenient` | date-time with optional fraction/offset → candidate's own type | ITU, JDK |
-| `formatSeconds` / `formatMillis` / `formatNanos` | `OffsetDateTime` → RFC-3339 UTC string | ITU, JDK |
+| `parse` | strict RFC-3339 date-time → `OffsetDateTime` | ITU, ITU configurable, JDK, JDK Instant, Google |
+| `parseLenient` | date-time with optional fraction/offset → candidate's own type | ITU, ITU (char[] buffer), JDK, Epoch, ITU (epoch millis), ITU (epoch millis, char[] buffer) |
+| `formatSeconds` / `formatMillis` / `formatNanos` | `OffsetDateTime` → RFC-3339 UTC string | ITU, JDK, Epoch |
 | `parseDuration` | ISO-8601 duration string → candidate's own duration type | ITU, JDK |
 | `formatDuration` | duration → ISO-8601 string | ITU, ITU (hours), JDK |
 
@@ -103,14 +111,14 @@ a symlink.
 
 | File | What |
 |---|---|
-| `report.html` | self-contained page with bar charts (hover for details) and tables |
+| `report.html` | self-contained page: ITU-vs-JDK summary per operation, the candidates with library versions and links, then a chart and a table per operation (hover the bars for details) |
 | `report.md` | markdown tables, ready to paste into a README or PR |
 | `report.png` | static chart (needs `matplotlib`) |
 | `summary.md` | one headline ITU-vs-JDK row per method |
 | `summary.png` | compact speed-up chart, transparent so it reads on light and dark |
 | `jmh-result.json` | the raw JMH output, including `jdkVersion` and `vmVersion` |
 | `jmh-result-grouped.json` | relabelled/sorted, for [jmh.morethan.io](https://jmh.morethan.io/) |
-| `run.properties` | environment and settings: CPU, OS, JDK, git rev, suite, mode, iteration args, elapsed |
+| `run.properties` | environment and settings: CPU, OS, JDK, git rev, suite, mode, iteration args, elapsed, and the candidate library versions read from the jar that ran (`lib.itu=...`) |
 | `jmh.log` | full JMH console output |
 | `profiles/` | async-profiler flame graphs, when run with `--async` |
 
@@ -118,8 +126,9 @@ a symlink.
 
 ### Publishing
 
-`--publish` copies the run's `report.html` to `docs/index.html` and stages it. GitHub Pages serves that
-directory at <https://ethlo.github.io/date-time-wars/>, which is where the ITU README links.
+`--publish` copies the run's `report.html` to `docs/index.html` (plus the summary files and the grouped
+json, so the page's "open in JMH Visualizer" link works) and stages it. GitHub Pages serves that directory
+at <https://ethlo.github.io/date-time-wars/>, which is where the ITU README links.
 
 ```shell
 ./bench.sh --thorough --all --publish
@@ -136,8 +145,10 @@ python3 report.py results/latest/jmh-result.json --readme ../itu/README.md
 Its chart is hotlinked straight from Pages (`summary.png`), so publishing a run updates it with no commit
 on the ITU side.
 
-Use `--thorough` for anything you publish. The report records the CPU, OS, JDK and git revision behind the
-numbers, so a published run stays traceable.
+Use `--thorough` for anything you publish. The report records the CPU, OS, JDK, git revision and library
+versions behind the numbers, so a published run stays traceable. Candidate descriptions, library links and
+which artifact's version to show live in `CANDIDATES` / `LIBS` in `report.py`; a new candidate needs a row
+there to get a name, a link and a version on the page.
 
 ### Comparing runs
 
@@ -193,3 +204,32 @@ directory holds the same tables in markdown.
 ### Environment
 
 Each run records its own environment in `run.properties`, so results carry the machine they were measured on.
+
+## Throughput: a 1 GB file, end to end
+
+The JMH rows measure a parser on one input that is hot in L1, with the branch predictors trained on that one
+shape. `throughput.sh` measures the other situation: a CSV of 25 million lines read from disk (or page cache),
+every timestamp parsed, with a hash of the results printed so the work cannot be skipped and the pipelines can be
+checked against each other.
+
+```bash
+./throughput.sh                       # generate 1 GB uniform + 1 GB mixed under results/throughput/, run all
+./throughput.sh --size 256 --passes 5 # smaller files, more timed passes (the median is reported)
+./throughput.sh --pipelines jdk,itu-buffer --shapes mixed
+```
+
+Two files, generated deterministically: **uniform** is all `YYYY-MM-DDTHH:MM:SS.mmmZ`; **mixed** varies the
+fraction (0, 3, 6 or 9 digits) and the offset (`Z` or a random `±HH:MM`) per line, so consecutive lines rarely
+share a shape. Five pipelines, each in its own JVM:
+
+| Pipeline | Reads | Parses |
+|---|---|---|
+| `floor-string` | `BufferedReader.readLine`, `indexOf`, `substring` | nothing (floor for the two String rows) |
+| `jdk` | same | `OffsetDateTime.parse` |
+| `itu-string` | same | `ITU.parseDateTime` |
+| `floor-buffer` | 1 MB `byte[]` chunks, newline/comma scan, copy to a reused `char[]` | nothing (floor for the buffer row) |
+| `itu-buffer` | same | `ITU.parseLenient(char[], …, MutableDateTimeBuffer)` |
+
+Read the table with the floors: a row's time is a *pipeline* time, and the "parser ns/timestamp" column is the
+row minus its floor, which is the only number in which two parsers are comparable. The ratio against `jdk` is
+what a program sees; it flattens as the parser gets faster than the reading and splitting around it.
