@@ -1,5 +1,7 @@
 package candidates.itu_buffer;
 
+import java.nio.charset.StandardCharsets;
+
 import org.openjdk.jmh.annotations.Benchmark;
 import org.openjdk.jmh.annotations.Param;
 import org.openjdk.jmh.annotations.Setup;
@@ -26,6 +28,7 @@ public class ItuBufferParseLenientBenchmark extends BenchmarkDefaults
     public String dateString;
 
     private char[] chars;
+    private byte[] bytes;
     private int offset;
     private int length;
     private MutableDateTimeBuffer buffer;
@@ -34,6 +37,7 @@ public class ItuBufferParseLenientBenchmark extends BenchmarkDefaults
     public void setup()
     {
         chars = dateString.toCharArray();
+        bytes = dateString.getBytes(StandardCharsets.US_ASCII);
         offset = 0;
         length = chars.length;
         buffer = new MutableDateTimeBuffer();
@@ -43,6 +47,16 @@ public class ItuBufferParseLenientBenchmark extends BenchmarkDefaults
     public int parseLenient()
     {
         return ITU.parseLenient(chars, offset, length, buffer);
+    }
+
+    /**
+     * The same window as bytes: the widening into the buffer's scratch plus the char[] parse. The difference to
+     * {@link #parseLenient()} is what the widening costs.
+     */
+    @Benchmark
+    public int parseLenientBytes()
+    {
+        return ITU.parseLenient(bytes, offset, length, buffer);
     }
 
     /**
